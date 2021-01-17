@@ -7,17 +7,17 @@ use std::collections::HashSet;
 
 pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), HashSet<&str>>> = Lazy::new(|| {
     hashmap! {
-            ("/info", Method::GET) => hashset![
-            ],
-            ("/recipes", Method::GET) => hashset![
-            ],
-            ("/recipes", Method::POST) => hashset![
-            ],
-            ("/recipes/{recipe_id}", Method::GET) => hashset![
-            ],
-            ("/recipes/{recipe_id}", Method::PUT) => hashset![
-            ],
-            ("/recipes/{recipe_id}", Method::DELETE) => hashset![
-            ],
-        }
+        ("/info", Method::GET) => hashset![
+        ],
+        ("/recipes", Method::GET) => hashset![
+        ],
+        ("/recipes", Method::POST) => hashset![
+        ],
+        ("/recipes/{recipe_id}", Method::GET) => hashset![
+        ],
+        ("/recipes/{recipe_id}", Method::PUT) => hashset![
+        ],
+        ("/recipes/{recipe_id}", Method::DELETE) => hashset![
+        ],
+    }
 });

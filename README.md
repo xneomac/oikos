@@ -3,7 +3,6 @@
 ## Todo
 
 - [ ] auth
-- [ ] format openapi
 - [ ] servings
 - [ ] bring online
 - [ ] import OpenRecipe
@@ -18,6 +17,7 @@
 
 ## Done
 
+- [x] format openapi
 - [X] search
 - [x] add recipe
 - [x] edit recipe
