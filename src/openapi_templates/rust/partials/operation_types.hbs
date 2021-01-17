@@ -3,8 +3,11 @@ pub mod {{snakecase operationId}} {
     use super::components;
     use serde::{Deserialize, Serialize};
     {{~#if (has parameters "in" "header")~}}
+    #[cfg(feature = "server")]
     use actix_web::error::ErrorBadRequest;
+    #[cfg(feature = "server")]
     use actix_web::{dev, FromRequest, HttpRequest};
+    #[cfg(feature = "server")]
     use futures::future::{err, ok, Ready};
     {{~/if}}
 
@@ -82,6 +85,7 @@ pub mod {{snakecase operationId}} {
     {{~#if (has parameters "in" "header")~}}
     {{>parameter_type type="header"}}
 
+    #[cfg(feature = "server")]
     impl FromRequest for Header {
         type Error = actix_web::Error;
         type Future = Ready<Result<Self, Self::Error>>;
