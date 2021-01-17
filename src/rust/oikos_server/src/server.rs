@@ -1,5 +1,6 @@
 #![allow(clippy::let_unit_value)]
 
+mod auth;
 mod recipe;
 
 use async_trait::async_trait;
@@ -7,8 +8,10 @@ use oikos_api::{models::*, server::OikosApi};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ServerError {
-    #[error("map error")]
+    #[error("recipe error")]
     RecipeError(#[from] recipe::RecipeError),
+    #[error("auth error")]
+    AuthError(#[from] auth::AuthError),
 }
 
 #[derive(Clone)]
@@ -103,6 +106,18 @@ impl OikosApi for Server {
         match self.delete_recipe_by_id(&recipe_id, &authorization) {
             Ok(_) => Ok(Success::Status200(())),
             Err(err @ recipe::RecipeError::NotFound(_)) => Err(Error::Status404(err.to_string())),
+            Err(err) => Err(Error::Unknown(err.into())),
+        }
+    }
+
+    async fn get_oauth_access_token(
+        &self,
+        _parameters: get_oauth_access_token::Parameters,
+        get_oauth_access_token::Body { code }: get_oauth_access_token::Body,
+    ) -> Result<get_oauth_access_token::Success, get_oauth_access_token::Error<Self::Error>> {
+        use get_oauth_access_token::*;
+        match self.get_oauth_access_token(&code).await {
+            Ok(access_token) => Ok(Success::Status200(access_token)),
             Err(err) => Err(Error::Unknown(err.into())),
         }
     }

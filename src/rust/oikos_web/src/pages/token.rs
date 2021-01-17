@@ -2,6 +2,7 @@ use crate::{
     root::AppRoute,
     services::{set_token, AuthService, Error},
 };
+use oikos_api::components::schemas::AccessToken;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -14,13 +15,13 @@ pub struct TokenPage<STATE: RouterState = ()> {
     link: ComponentLink<Self>,
     auth_service: AuthService,
     task: Option<FetchTask>,
-    response: Callback<Result<String, Error>>,
+    response: Callback<Result<AccessToken, Error>>,
     props: Props,
 }
 
 pub enum Message {
     ChangeRoute(AppRoute),
-    TokenReceived(Result<String, Error>),
+    TokenReceived(Result<AccessToken, Error>),
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -63,13 +64,13 @@ impl<STATE: RouterState> Component for TokenPage<STATE> {
                 let route = Route::from(route);
                 self.router.send(RouteRequest::ChangeRoute(route));
             }
-            Message::TokenReceived(token) => match token {
-                Ok(token) => {
-                    set_token(Some(token));
+            Message::TokenReceived(response) => match response {
+                Ok(response) => {
+                    set_token(Some(response.access_token));
                     self.link
                         .send_message(Message::ChangeRoute(AppRoute::RecipeList));
                 }
-                Err(err) => {}
+                Err(_) => {}
             },
         }
         true

@@ -104,7 +104,7 @@ impl Requests {
             .uri(url.as_str())
             .header("Content-Type", "application/json");
         if let Some(token) = get_token() {
-            builder = builder.header("Authorization", format!("token {}", token));
+            builder = builder.header("Authorization", format!("{}", token));
         }
         let request = builder.body(body).unwrap();
         debug!("Request: {:?}", request);
@@ -112,7 +112,7 @@ impl Requests {
         FetchService::fetch(request, handler.into()).unwrap()
     }
 
-    pub fn delete<T>(&mut self, url: String, callback: Callback<Result<T, Error>>) -> FetchTask
+    pub fn _delete<T>(&mut self, url: String, callback: Callback<Result<T, Error>>) -> FetchTask
     where
         for<'de> T: Deserialize<'de> + 'static + std::fmt::Debug,
     {

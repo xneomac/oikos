@@ -69,6 +69,32 @@ impl OikosApiClient {
     }
 
     #[allow(clippy::unit_arg)]
+    pub async fn get_oauth_access_token(
+        &self,
+        body: &get_oauth_access_token::Body,
+    ) -> Result<get_oauth_access_token::Success, get_oauth_access_token::Error> {
+        use get_oauth_access_token::*;
+        let url = self
+            .url
+            .join("/access_token".trim_start_matches('/'))
+            .expect("url parse error");
+        let response = self
+            .client
+            .post(url)
+            .json(&body)
+            .send()
+            .await
+            .map_err(ReqwestError::new)?;
+        match response.status().as_str() {
+            "200" => {
+                let response_body = response.json().await.map_err(ReqwestError::new)?;
+                Ok(Success::Status200(response_body))
+            }
+            _ => Err(Error::unknown(response).await),
+        }
+    }
+
+    #[allow(clippy::unit_arg)]
     pub async fn get_info(&self) -> Result<get_info::Success, get_info::Error> {
         use get_info::*;
         let url = self
@@ -269,6 +295,41 @@ impl OikosApiClient {
                 Err(Error::Status404(response_body))
             }
             _ => Err(Error::unknown(response).await),
+        }
+    }
+}
+
+pub mod get_oauth_access_token {
+    pub use crate::models::get_oauth_access_token::*;
+
+    #[allow(clippy::large_enum_variant)]
+    #[derive(Debug, thiserror::Error, displaydoc::Display)]
+    pub enum Error {
+        /// Request failed
+        Client(#[from] super::ReqwestError),
+        /// IO error occured while retrieving response body
+        Io(#[from] std::io::Error),
+        /// Request body serialization to JSON failed
+        BodySerialization(#[from] serde_json::Error),
+        /// Request parameters serialization failed
+        ParametersSerialization(#[from] serde_urlencoded::ser::Error),
+        /// Timeout occured during request
+        Timeout(#[from] async_std::future::TimeoutError),
+        /// Status 200 error: {0:?}
+        Status200(Status200),
+        /// Unknown: {headers:?} {text:?}
+        Unknown {
+            headers: reqwest::header::HeaderMap,
+            text: reqwest::Result<String>,
+        },
+    }
+
+    impl Error {
+        pub async fn unknown(response: reqwest::Response) -> Self {
+            Self::Unknown {
+                headers: response.headers().clone(),
+                text: response.text().await,
+            }
         }
     }
 }

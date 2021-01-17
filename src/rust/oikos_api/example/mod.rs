@@ -2,11 +2,31 @@ pub mod components {
     pub mod schemas {
         use crate::components;
         use crate::components::schemas::{
-            Forbidden, Info, Notfound, RecipeIngredientModel, RecipeIngredientModelAmounts,
-            RecipeList, RecipeModel, RecipeModelHaccp, RecipeModelOvenTemp, RecipeModelSourceBook,
-            RecipeModelSteps, RecipeModelYields, TempUnit, Unauthorized,
+            AccessToken, AccessTokenRequest, Forbidden, Info, Notfound, RecipeIngredientModel,
+            RecipeIngredientModelAmounts, RecipeList, RecipeModel, RecipeModelHaccp,
+            RecipeModelOvenTemp, RecipeModelSourceBook, RecipeModelSteps, RecipeModelYields,
+            TempUnit, Unauthorized,
         };
         use serde_json::json;
+
+        pub struct AccessTokenExample;
+
+        const ACCESS_TOKEN: &str =
+            r#"{"access_token":"access_token","scope":"scope","token_type":"token_type"}"#;
+
+        impl AccessTokenExample {
+            pub fn default() -> Option<AccessToken> {
+                Some(serde_json::from_str(ACCESS_TOKEN).unwrap())
+            }
+        }
+
+        pub struct AccessTokenRequestExample;
+        impl AccessTokenRequestExample {
+            pub fn default() -> Option<AccessTokenRequest> {
+                let access_token_request: String = json!({}).to_string();
+                Some(serde_json::from_str(&access_token_request).unwrap())
+            }
+        }
 
         pub struct ForbiddenExample;
 

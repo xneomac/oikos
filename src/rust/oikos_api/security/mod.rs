@@ -7,6 +7,8 @@ use std::collections::HashSet;
 
 pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), HashSet<&str>>> = Lazy::new(|| {
     hashmap! {
+        ("/access_token", Method::POST) => hashset![
+        ],
         ("/info", Method::GET) => hashset![
         ],
         ("/recipes", Method::GET) => hashset![

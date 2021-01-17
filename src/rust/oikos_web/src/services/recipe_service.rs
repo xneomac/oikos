@@ -52,12 +52,12 @@ impl RecipeService {
             .post::<RecipeModel, RecipeModel>("/api/recipes".to_string(), recipe, callback)
     }
 
-    pub fn delete_recipe_by_id(
+    pub fn _delete_recipe_by_id(
         &mut self,
         recipe_id: &str,
         callback: Callback<Result<(), Error>>,
     ) -> FetchTask {
         self.requests
-            .delete::<()>(format!("/api/recipes/{}", recipe_id), callback)
+            ._delete::<()>(format!("/api/recipes/{}", recipe_id), callback)
     }
 }
