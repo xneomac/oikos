@@ -2,7 +2,6 @@
 
 ## Todo
 
-- [ ] auth
 - [ ] servings
 - [ ] bring online
 - [ ] import OpenRecipe
@@ -17,6 +16,7 @@
 
 ## Done
 
+- [x] auth
 - [x] format openapi
 - [X] search
 - [x] add recipe
