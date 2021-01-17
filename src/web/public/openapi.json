@@ -21,6 +21,7 @@
     "/info" : {
       "get" : {
         "operationId" : "get_info",
+        "parameters" : [ ],
         "responses" : {
           "200" : {
             "content" : {
@@ -40,6 +41,16 @@
     "/recipes" : {
       "get" : {
         "operationId" : "get_recipes",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
         "responses" : {
           "200" : {
             "content" : {
@@ -76,6 +87,16 @@
       },
       "post" : {
         "operationId" : "add_recipe",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -109,6 +130,15 @@
           "explode" : false,
           "in" : "path",
           "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -160,6 +190,15 @@
           "explode" : false,
           "in" : "path",
           "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -219,6 +258,15 @@
           "explode" : false,
           "in" : "path",
           "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        }, {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -620,6 +668,7 @@
         },
         "required" : [ "amount", "unit" ]
       }
-    }
+    },
+    "securitySchemes" : { }
   }
 }

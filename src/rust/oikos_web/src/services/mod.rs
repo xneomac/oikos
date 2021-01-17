@@ -103,7 +103,7 @@ impl Requests {
             .uri(url.as_str())
             .header("Content-Type", "application/json");
         if let Some(token) = get_token() {
-            builder = builder.header("Authorization", format!("Token {}", token));
+            builder = builder.header("authorization", format!("{}", token));
         }
         let request = builder.body(body).unwrap();
         debug!("Request: {:?}", request);

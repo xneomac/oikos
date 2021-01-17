@@ -242,15 +242,52 @@ pub mod get_info {
 
 pub mod get_recipes {
     use super::components;
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
     use serde::{Deserialize, Serialize};
 
     /// Parameters for get_recipes operation
-    pub struct Parameters;
+    #[derive(Deserialize, Debug)]
+    pub struct Parameters {
+        pub authorization: String,
+    }
 
     impl Parameters {
-        #[allow(clippy::new_without_default)]
-        pub fn new() -> Self {
-            Self {}
+        pub fn new(header: Header) -> Self {
+            Self {
+                authorization: header.authorization,
+            }
+        }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
+    }
+    /// Header parameters for get_recipes operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
         }
     }
 
@@ -303,15 +340,52 @@ pub mod get_recipes {
 
 pub mod add_recipe {
     use super::components;
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
     use serde::{Deserialize, Serialize};
 
     /// Parameters for add_recipe operation
-    pub struct Parameters;
+    #[derive(Deserialize, Debug)]
+    pub struct Parameters {
+        pub authorization: String,
+    }
 
     impl Parameters {
-        #[allow(clippy::new_without_default)]
-        pub fn new() -> Self {
-            Self {}
+        pub fn new(header: Header) -> Self {
+            Self {
+                authorization: header.authorization,
+            }
+        }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
+    }
+    /// Header parameters for add_recipe operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
         }
     }
 
@@ -352,6 +426,9 @@ pub mod add_recipe {
 
 pub mod get_recipe_by_id {
     use super::components;
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
     use serde::{Deserialize, Serialize};
 
     /// Parameters for get_recipe_by_id operation
@@ -359,12 +436,15 @@ pub mod get_recipe_by_id {
     pub struct Parameters {
         /// id of a recipe
         pub recipe_id: String,
+
+        pub authorization: String,
     }
 
     impl Parameters {
-        pub fn new(path: Path) -> Self {
+        pub fn new(path: Path, header: Header) -> Self {
             Self {
                 recipe_id: path.recipe_id,
+                authorization: header.authorization,
             }
         }
 
@@ -373,12 +453,42 @@ pub mod get_recipe_by_id {
                 recipe_id: self.recipe_id.clone(),
             }
         }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
     }
     /// Path parameters for get_recipe_by_id operation
     #[derive(Deserialize, Serialize)]
     pub struct Path {
         /// id of a recipe
         pub recipe_id: String,
+    }
+    /// Header parameters for get_recipe_by_id operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
+        }
     }
 
     #[derive(Debug)]
@@ -437,6 +547,9 @@ pub mod get_recipe_by_id {
 
 pub mod update_recipe_by_id {
     use super::components;
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
     use serde::{Deserialize, Serialize};
 
     /// Parameters for update_recipe_by_id operation
@@ -444,12 +557,15 @@ pub mod update_recipe_by_id {
     pub struct Parameters {
         /// id of a recipe
         pub recipe_id: String,
+
+        pub authorization: String,
     }
 
     impl Parameters {
-        pub fn new(path: Path) -> Self {
+        pub fn new(path: Path, header: Header) -> Self {
             Self {
                 recipe_id: path.recipe_id,
+                authorization: header.authorization,
             }
         }
 
@@ -458,12 +574,42 @@ pub mod update_recipe_by_id {
                 recipe_id: self.recipe_id.clone(),
             }
         }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
     }
     /// Path parameters for update_recipe_by_id operation
     #[derive(Deserialize, Serialize)]
     pub struct Path {
         /// id of a recipe
         pub recipe_id: String,
+    }
+    /// Header parameters for update_recipe_by_id operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
+        }
     }
 
     pub type Body = components::schemas::RecipeModel;
@@ -524,6 +670,9 @@ pub mod update_recipe_by_id {
 
 pub mod delete_recipe_by_id {
     use super::components;
+    use actix_web::error::ErrorBadRequest;
+    use actix_web::{dev, FromRequest, HttpRequest};
+    use futures::future::{err, ok, Ready};
     use serde::{Deserialize, Serialize};
 
     /// Parameters for delete_recipe_by_id operation
@@ -531,12 +680,15 @@ pub mod delete_recipe_by_id {
     pub struct Parameters {
         /// id of a recipe
         pub recipe_id: String,
+
+        pub authorization: String,
     }
 
     impl Parameters {
-        pub fn new(path: Path) -> Self {
+        pub fn new(path: Path, header: Header) -> Self {
             Self {
                 recipe_id: path.recipe_id,
+                authorization: header.authorization,
             }
         }
 
@@ -545,12 +697,42 @@ pub mod delete_recipe_by_id {
                 recipe_id: self.recipe_id.clone(),
             }
         }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
     }
     /// Path parameters for delete_recipe_by_id operation
     #[derive(Deserialize, Serialize)]
     pub struct Path {
         /// id of a recipe
         pub recipe_id: String,
+    }
+    /// Header parameters for delete_recipe_by_id operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
+        }
     }
 
     #[derive(Deserialize)]

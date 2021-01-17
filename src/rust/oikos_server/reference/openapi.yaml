@@ -27,6 +27,7 @@ paths:
           description: OK
       tags:
         - general
+      parameters: []
   /recipes:
     post:
       summary: Add recipe
@@ -43,6 +44,12 @@ paths:
           application/json:
             schema:
               $ref: ./models/recipe_model.v1.yaml
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
     get:
       summary: Get all recipes
       operationId: get_recipes
@@ -65,6 +72,12 @@ paths:
             application/json:
               schema:
                 $ref: ./models/forbidden.v1.yaml
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
     parameters: []
   '/recipes/{recipe_id}':
     get:
@@ -96,7 +109,12 @@ paths:
               schema:
                 $ref: ./models/notfound.v1.yaml
       operationId: get_recipe_by_id
-      parameters: []
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
     parameters:
       - description: id of a recipe
         in: path
@@ -138,6 +156,12 @@ paths:
           application/json:
             schema:
               $ref: ./models/recipe_model.v1.yaml
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
     delete:
       summary: Delete a recipe
       operationId: delete_recipe_by_id
@@ -162,3 +186,11 @@ paths:
             application/json:
               schema:
                 $ref: ./models/notfound.v1.yaml
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+components:
+  securitySchemes: {}

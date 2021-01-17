@@ -92,10 +92,10 @@ async fn get_info<Server: OikosApi>(
 }
 /// Get all recipes
 async fn get_recipes<Server: OikosApi>(
-    server: Data<Server>,
+    server: Data<Server>,header: get_recipes::Header,
 ) -> impl Responder {
     use get_recipes::*;
-    let parameters = Parameters::new(
+    let parameters = Parameters::new(header,
     );
 
     match server.get_recipes(parameters).await {
@@ -107,11 +107,11 @@ async fn get_recipes<Server: OikosApi>(
 }
 /// Add recipe
 async fn add_recipe<Server: OikosApi>(
-    server: Data<Server>,
+    server: Data<Server>,header: add_recipe::Header,
             body: Json<add_recipe::Body>,
 ) -> impl Responder {
     use add_recipe::*;
-    let parameters = Parameters::new(
+    let parameters = Parameters::new(header,
     );
                 let body = body.into_inner();
 
@@ -122,10 +122,10 @@ async fn add_recipe<Server: OikosApi>(
 }
 /// Get a recipe
 async fn get_recipe_by_id<Server: OikosApi>(
-    server: Data<Server>,path: Path<get_recipe_by_id::Path>,
+    server: Data<Server>,path: Path<get_recipe_by_id::Path>,header: get_recipe_by_id::Header,
 ) -> impl Responder {
     use get_recipe_by_id::*;
-    let parameters = Parameters::new(path.into_inner(),
+    let parameters = Parameters::new(path.into_inner(),header,
     );
 
     match server.get_recipe_by_id(parameters).await {
@@ -138,11 +138,11 @@ async fn get_recipe_by_id<Server: OikosApi>(
 }
 /// Update a recipe
 async fn update_recipe_by_id<Server: OikosApi>(
-    server: Data<Server>,path: Path<update_recipe_by_id::Path>,
+    server: Data<Server>,path: Path<update_recipe_by_id::Path>,header: update_recipe_by_id::Header,
             body: Json<update_recipe_by_id::Body>,
 ) -> impl Responder {
     use update_recipe_by_id::*;
-    let parameters = Parameters::new(path.into_inner(),
+    let parameters = Parameters::new(path.into_inner(),header,
     );
                 let body = body.into_inner();
 
@@ -156,10 +156,10 @@ async fn update_recipe_by_id<Server: OikosApi>(
 }
 /// Delete a recipe
 async fn delete_recipe_by_id<Server: OikosApi>(
-    server: Data<Server>,path: Path<delete_recipe_by_id::Path>,
+    server: Data<Server>,path: Path<delete_recipe_by_id::Path>,header: delete_recipe_by_id::Header,
 ) -> impl Responder {
     use delete_recipe_by_id::*;
-    let parameters = Parameters::new(path.into_inner(),
+    let parameters = Parameters::new(path.into_inner(),header,
     );let body = delete_recipe_by_id::Body {};
 
     match server.delete_recipe_by_id(parameters, body).await {Ok(Success::Status200(response)) => HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response),

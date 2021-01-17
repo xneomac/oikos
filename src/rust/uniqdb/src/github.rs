@@ -25,8 +25,7 @@ pub struct GithubDb {
 }
 
 impl GithubDb {
-    pub fn new(organization: &str) -> Result<Self, GithubDbError> {
-        let token = std::env::var("GITHUB_ACCESS_TOKEN")?;
+    pub fn new(token: &str, organization: &str) -> Result<Self, GithubDbError> {
         Ok(Self {
             client: Github::new(token)?,
             organization: organization.to_string(),

@@ -86,7 +86,7 @@ impl OikosApiClient {
 
     #[allow(clippy::unit_arg)]
     pub async fn get_recipes(
-        &self,) -> Result<get_recipes::Success, get_recipes::Error> {
+        &self,parameters: &get_recipes::Parameters,) -> Result<get_recipes::Success, get_recipes::Error> {
         use get_recipes::*;
         let url = self.url.join(
             "/recipes".trim_start_matches('/')
@@ -109,7 +109,7 @@ impl OikosApiClient {
 
     #[allow(clippy::unit_arg)]
     pub async fn add_recipe(
-        &self,body: &add_recipe::Body,
+        &self,parameters: &add_recipe::Parameters,body: &add_recipe::Body,
         ) -> Result<add_recipe::Success, add_recipe::Error> {
         use add_recipe::*;
         let url = self.url.join(

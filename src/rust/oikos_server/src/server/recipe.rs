@@ -37,9 +37,9 @@ struct GithubRepo {
 }
 
 impl crate::server::Server {
-    pub fn get_recipes(&self) -> Result<RecipeList, RecipeError> {
-        let github_db = GithubDb::new("open-cooking")?;
-        let repo_list: Vec<GithubRepo> = github_db.get_all()?;
+    pub fn get_recipes(&self, authorization: &str) -> Result<RecipeList, RecipeError> {
+        let db = GithubDb::new(authorization, "open-cooking")?;
+        let repo_list: Vec<GithubRepo> = db.get_all()?;
         let recipe_list = repo_list
             .iter()
             .map(|recipe| RecipeListItem {
@@ -53,20 +53,32 @@ impl crate::server::Server {
         Ok(recipe_list)
     }
 
-    pub async fn add_recipe(&self, recipe: &RecipeModel) -> Result<RecipeModel, RecipeError> {
-        let db = GithubDb::new("open-cooking")?;
+    pub async fn add_recipe(
+        &self,
+        recipe: &RecipeModel,
+        authorization: &str,
+    ) -> Result<RecipeModel, RecipeError> {
+        let db = GithubDb::new(authorization, "open-cooking")?;
         db.create(&recipe.id, &recipe.name, recipe)?;
         Ok(recipe.clone())
     }
 
-    pub fn delete_recipe_by_id(&self, recipe_id: &str) -> Result<(), RecipeError> {
-        let db = GithubDb::new("open-cooking")?;
+    pub fn delete_recipe_by_id(
+        &self,
+        recipe_id: &str,
+        authorization: &str,
+    ) -> Result<(), RecipeError> {
+        let db = GithubDb::new(authorization, "open-cooking")?;
         <GithubDb as UniqDb<RecipeModel>>::delete(&db, recipe_id)?;
         Ok(())
     }
 
-    pub fn get_recipe_by_id(&self, recipe_id: &str) -> Result<RecipeModel, RecipeError> {
-        let db = GithubDb::new("open-cooking")?;
+    pub fn get_recipe_by_id(
+        &self,
+        recipe_id: &str,
+        authorization: &str,
+    ) -> Result<RecipeModel, RecipeError> {
+        let db = GithubDb::new(authorization, "open-cooking")?;
         let recipe = db.get(recipe_id)?;
         Ok(recipe)
     }
@@ -75,8 +87,9 @@ impl crate::server::Server {
         &self,
         recipe_id: &str,
         recipe: &RecipeModel,
+        authorization: &str,
     ) -> Result<RecipeModel, RecipeError> {
-        let db = GithubDb::new("open-cooking")?;
+        let db = GithubDb::new(authorization, "open-cooking")?;
         let updated_recipe = db.update(recipe_id, recipe)?;
         Ok(updated_recipe)
     }

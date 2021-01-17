@@ -84,7 +84,7 @@ pub mod get_recipes {
     impl MockBuilder200 {
 
         #[allow(clippy::new_without_default)]
-        pub fn new(
+        pub fn new( parameters: &get_recipes::Parameters,
         ) -> Self {
             let url =
                 "/recipes".to_string();
@@ -130,9 +130,9 @@ pub mod get_recipes {
         }
     }
 
-    pub fn mock_200 (
+    pub fn mock_200 ( parameters: &get_recipes::Parameters,
         ) -> MockBuilder200 {
-        MockBuilder200::new(
+        MockBuilder200::new(parameters,
         )
     }
     pub struct MockBuilder401 {
@@ -144,7 +144,7 @@ pub mod get_recipes {
     impl MockBuilder401 {
 
         #[allow(clippy::new_without_default)]
-        pub fn new(
+        pub fn new( parameters: &get_recipes::Parameters,
         ) -> Self {
             let url =
                 "/recipes".to_string();
@@ -190,9 +190,9 @@ pub mod get_recipes {
         }
     }
 
-    pub fn mock_401 (
+    pub fn mock_401 ( parameters: &get_recipes::Parameters,
         ) -> MockBuilder401 {
-        MockBuilder401::new(
+        MockBuilder401::new(parameters,
         )
     }
     pub struct MockBuilder403 {
@@ -204,7 +204,7 @@ pub mod get_recipes {
     impl MockBuilder403 {
 
         #[allow(clippy::new_without_default)]
-        pub fn new(
+        pub fn new( parameters: &get_recipes::Parameters,
         ) -> Self {
             let url =
                 "/recipes".to_string();
@@ -250,9 +250,9 @@ pub mod get_recipes {
         }
     }
 
-    pub fn mock_403 (
+    pub fn mock_403 ( parameters: &get_recipes::Parameters,
         ) -> MockBuilder403 {
-        MockBuilder403::new(
+        MockBuilder403::new(parameters,
         )
     }
 }
@@ -271,7 +271,7 @@ pub mod add_recipe {
     impl MockBuilder200 {
 
         #[allow(clippy::new_without_default)]
-        pub fn new( body: Option<add_recipe::Body>,
+        pub fn new( parameters: &add_recipe::Parameters, body: Option<add_recipe::Body>,
         ) -> Self {
             let url =
                 "/recipes".to_string();
@@ -321,9 +321,9 @@ pub mod add_recipe {
         }
     }
 
-    pub fn mock_200 ( body: Option<add_recipe::Body>,
+    pub fn mock_200 ( parameters: &add_recipe::Parameters, body: Option<add_recipe::Body>,
         ) -> MockBuilder200 {
-        MockBuilder200::new(body,
+        MockBuilder200::new(parameters,body,
         )
     }
 }
