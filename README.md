@@ -3,6 +3,7 @@
 ## Todo
 
 - [ ] auth
+- [ ] format openapi
 - [ ] servings
 - [ ] bring online
 - [ ] import OpenRecipe
