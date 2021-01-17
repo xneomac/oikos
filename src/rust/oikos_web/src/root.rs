@@ -49,7 +49,7 @@ impl RootComponent {
                 html! { <AuthPage /> }
             }
             AppRoute::Token(code) => {
-                html! { <TokenPage token=code/> }
+                html! { <TokenPage code=code/> }
             }
             AppRoute::Search => {
                 html! { <SearchPage /> }

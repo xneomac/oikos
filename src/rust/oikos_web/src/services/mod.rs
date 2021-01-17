@@ -1,3 +1,4 @@
+mod auth_service;
 mod recipe_service;
 
 use lazy_static::lazy_static;
@@ -10,6 +11,7 @@ use yew::format::{Json, Nothing, Text};
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::services::storage::{Area, StorageService};
 
+pub use auth_service::AuthService;
 pub use recipe_service::RecipeService;
 
 const TOKEN_KEY: &str = "yew.token";
@@ -45,7 +47,6 @@ pub fn is_authenticated() -> bool {
     get_token().is_some()
 }
 
-/// Http request
 #[derive(Default, Debug)]
 pub struct Requests {}
 
@@ -103,7 +104,7 @@ impl Requests {
             .uri(url.as_str())
             .header("Content-Type", "application/json");
         if let Some(token) = get_token() {
-            builder = builder.header("Authorization", token);
+            builder = builder.header("Authorization", format!("token {}", token));
         }
         let request = builder.body(body).unwrap();
         debug!("Request: {:?}", request);
