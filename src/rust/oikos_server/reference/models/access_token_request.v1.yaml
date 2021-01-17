@@ -1,0 +1,7 @@
+title: access_token_request
+type: object
+properties:
+  code:
+    type: string
+required:
+  - code

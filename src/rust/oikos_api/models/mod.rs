@@ -6,6 +6,22 @@ pub mod components {
         use serde::{Deserialize, Serialize};
         use std::collections::HashMap;
         use std::convert::TryFrom;
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct AccessToken {
+            #[serde(rename = "access_token")]
+            pub access_token: String,
+            #[serde(rename = "scope")]
+            pub scope: String,
+            #[serde(rename = "token_type")]
+            pub token_type: String,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct AccessTokenRequest {
+            #[serde(rename = "code")]
+            pub code: String,
+        }
+
         /// Forbidden
         pub type Forbidden = String;
 
@@ -191,6 +207,55 @@ pub mod components {
         /// Unauthorized
         pub type Unauthorized = String;
     }
+}
+
+pub mod get_oauth_access_token {
+    use super::components;
+    use serde::{Deserialize, Serialize};
+
+    /// Parameters for get_oauth_access_token operation
+    pub struct Parameters;
+
+    impl Parameters {
+        #[allow(clippy::new_without_default)]
+        pub fn new() -> Self {
+            Self {}
+        }
+    }
+
+    pub type Body = components::schemas::AccessTokenRequest;
+
+    #[derive(Debug)]
+    pub enum Response<T> {
+        Response200(Response200),
+        Unspecified(T),
+    }
+
+    /// OK
+    pub type Response200 = components::schemas::AccessToken;
+
+    #[derive(Debug)]
+    pub enum Success {
+        Status200(Status200),
+    }
+
+    #[derive(Debug)]
+    pub enum Error<T: std::fmt::Debug> {
+        Unknown(T),
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::fmt::Display for Error<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::Unknown(response) => write!(f, "Unspecified response: `{}`", response),
+            }
+        }
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::error::Error for Error<T> {}
+
+    /// OK
+    pub type Status200 = components::schemas::AccessToken;
 }
 
 pub mod get_info {

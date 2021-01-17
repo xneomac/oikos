@@ -16,6 +16,14 @@ use std::error::Error;
 pub trait OikosApi {
     type Error: std::error::Error;
 
+    async fn get_oauth_access_token(
+        &self,
+        _parameters: get_oauth_access_token::Parameters,
+        _body: get_oauth_access_token::Body,
+    ) -> Result<get_oauth_access_token::Success, get_oauth_access_token::Error<Self::Error>> {
+        unimplemented!()
+    }
+
     async fn get_info(
         &self,
         _parameters: get_info::Parameters,
@@ -76,6 +84,22 @@ fn err_to_string(err: &dyn std::error::Error) -> String {
     )
 }
 
+/// Get oauth access token
+async fn get_oauth_access_token<Server: OikosApi>(
+    server: Data<Server>,
+    body: Json<get_oauth_access_token::Body>,
+) -> impl Responder {
+    use get_oauth_access_token::*;
+    let parameters = Parameters::new();
+    let body = body.into_inner();
+
+    match server.get_oauth_access_token(parameters, body).await {
+        Ok(Success::Status200(response)) => {
+            HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response)
+        }
+        Err(Error::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
+    }
+}
 /// Get info
 async fn get_info<Server: OikosApi>(server: Data<Server>) -> impl Responder {
     use get_info::*;
@@ -206,7 +230,8 @@ async fn delete_recipe_by_id<Server: OikosApi>(
 }
 
 pub fn config<Server: OikosApi + Send + Sync + Clone + 'static>(app: &mut ServiceConfig) {
-    app.service(resource("/info").route(get().to(get_info::<Server>)))
+    app.service(resource("/access_token").route(post().to(get_oauth_access_token::<Server>)))
+        .service(resource("/info").route(get().to(get_info::<Server>)))
         .service(
             resource("/recipes")
                 .route(get().to(get_recipes::<Server>))

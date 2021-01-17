@@ -1,3 +1,4 @@
+use crate::services::set_token;
 use yew::prelude::*;
 
 pub struct AuthPage;
@@ -6,6 +7,7 @@ impl Component for AuthPage {
     type Message = ();
     type Properties = ();
     fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        set_token(None);
         Self
     }
 
@@ -33,7 +35,7 @@ impl Component for AuthPage {
                             <form class="col s12">
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <a href="https://github.com/login/oauth/authorize?client_id=6243e7d6a656115a9871" class="waves-effect waves-light btn">{"Log in with github"}</a>
+                                        <a href="https://github.com/login/oauth/authorize?client_id=6243e7d6a656115a9871&scope=repo,write:org" class="waves-effect waves-light btn">{"Log in with github"}</a>
                                     </div>
                                 </div>
                             </form>

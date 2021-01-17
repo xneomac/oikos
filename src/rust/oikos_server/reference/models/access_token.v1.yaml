@@ -1,0 +1,13 @@
+title: access_token
+type: object
+properties:
+  access_token:
+    type: string
+  scope:
+    type: string
+  token_type:
+    type: string
+required:
+  - access_token
+  - scope
+  - token_type

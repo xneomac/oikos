@@ -15,7 +15,7 @@ pub enum GithubDbError {
     SerdeError(#[from] serde_json::error::Error),
     #[error("invalid data {0}")]
     InvalidDataError(String),
-    #[error("github error")]
+    #[error("github error {0}")]
     GithubError(#[from] github_rs::errors::Error),
 }
 
@@ -123,9 +123,7 @@ fn list_organization_repositories(
         if let Some(data) = json.as_array() {
             Ok(data.clone())
         } else {
-            Err(GithubDbError::InvalidDataError(
-                "json is not an array".to_string(),
-            ))
+            Err(GithubDbError::InvalidDataError(json.to_string()))
         }
     } else {
         Err(GithubDbError::InvalidDataError(

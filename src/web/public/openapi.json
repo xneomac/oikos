@@ -326,6 +326,33 @@
         },
         "summary" : "Update a recipe"
       }
+    },
+    "/access_token" : {
+      "post" : {
+        "operationId" : "get_oauth_access_token",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/access_token_request"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/access_token"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get oauth access token"
+      }
     }
   },
   "components" : {
@@ -497,6 +524,37 @@
         "example" : "not found",
         "title" : "Not Found",
         "type" : "string"
+      },
+      "access_token_request" : {
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "code" ],
+        "title" : "access_token_request",
+        "type" : "object"
+      },
+      "access_token" : {
+        "example" : {
+          "access_token" : "access_token",
+          "scope" : "scope",
+          "token_type" : "token_type"
+        },
+        "properties" : {
+          "access_token" : {
+            "type" : "string"
+          },
+          "scope" : {
+            "type" : "string"
+          },
+          "token_type" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "access_token", "scope", "token_type" ],
+        "title" : "access_token",
+        "type" : "object"
       },
       "recipe_ingredient_model" : {
         "example" : {

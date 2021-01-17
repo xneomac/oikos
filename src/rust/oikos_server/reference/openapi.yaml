@@ -192,5 +192,21 @@ paths:
           in: header
           name: Authorization
           required: true
+  /access_token:
+    post:
+      summary: Get oauth access token
+      operationId: get_oauth_access_token
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/access_token.v1.yaml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: ./models/access_token_request.v1.yaml
 components:
   securitySchemes: {}
