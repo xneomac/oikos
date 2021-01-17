@@ -1,0 +1,15 @@
+refresh_rate: 2 seconds
+appenders:
+  stdout:
+    kind: console
+    encoder:
+      pattern: "{h([{l:<5}] [{d(%H:%M:%S%.9f)}]: {m}{n})}"
+root:
+  level: warn
+  appenders:
+    - stdout
+loggers:
+  server:
+    level: debug
+  actix_web:
+    level: warn

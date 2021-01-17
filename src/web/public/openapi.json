@@ -1,0 +1,625 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "contact" : {
+      "email" : "support@easymov.com",
+      "name" : "Support",
+      "url" : "https://easymov.com/support"
+    },
+    "description" : "This is the API for oikos server",
+    "title" : "Oikos API",
+    "version" : "0.1.0"
+  },
+  "servers" : [ {
+    "description" : "default",
+    "url" : "http://localhost:9000/api"
+  } ],
+  "tags" : [ {
+    "name" : "general"
+  } ],
+  "paths" : {
+    "/info" : {
+      "get" : {
+        "operationId" : "get_info",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/info"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Get info",
+        "tags" : [ "general" ]
+      }
+    },
+    "/recipes" : {
+      "get" : {
+        "operationId" : "get_recipes",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/recipe_list"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          }
+        },
+        "summary" : "Get all recipes"
+      },
+      "post" : {
+        "operationId" : "add_recipe",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/recipe_model"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/recipe_model"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Add recipe"
+      }
+    },
+    "/recipes/{recipe_id}" : {
+      "delete" : {
+        "operationId" : "delete_recipe_by_id",
+        "parameters" : [ {
+          "description" : "id of a recipe",
+          "example" : "5dbafed03130352a54ef46cb",
+          "explode" : false,
+          "in" : "path",
+          "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/notfound"
+                }
+              }
+            },
+            "description" : "Not Found"
+          }
+        },
+        "summary" : "Delete a recipe"
+      },
+      "get" : {
+        "operationId" : "get_recipe_by_id",
+        "parameters" : [ {
+          "description" : "id of a recipe",
+          "example" : "5dbafed03130352a54ef46cb",
+          "explode" : false,
+          "in" : "path",
+          "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/recipe_model"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/notfound"
+                }
+              }
+            },
+            "description" : "Not Found"
+          }
+        },
+        "summary" : "Get a recipe",
+        "tags" : [ ]
+      },
+      "put" : {
+        "operationId" : "update_recipe_by_id",
+        "parameters" : [ {
+          "description" : "id of a recipe",
+          "example" : "5dbafed03130352a54ef46cb",
+          "explode" : false,
+          "in" : "path",
+          "name" : "recipe_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/recipe_model"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/recipe_model"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/unauthorized"
+                }
+              }
+            },
+            "description" : "Unauthorized"
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/forbidden"
+                }
+              }
+            },
+            "description" : "Forbidden"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/notfound"
+                }
+              }
+            },
+            "description" : "Not Found"
+          }
+        },
+        "summary" : "Update a recipe"
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "info" : {
+        "example" : {
+          "version" : "version"
+        },
+        "properties" : {
+          "version" : {
+            "type" : "string"
+          }
+        },
+        "title" : "Info",
+        "type" : "object"
+      },
+      "recipe_list" : {
+        "items" : {
+          "properties" : {
+            "id" : {
+              "type" : "string"
+            },
+            "name" : {
+              "type" : "string"
+            }
+          },
+          "required" : [ "id", "name" ],
+          "type" : "object"
+        },
+        "title" : "recipe_list",
+        "type" : "array"
+      },
+      "unauthorized" : {
+        "description" : "Unauthorized",
+        "example" : "unauthorized",
+        "title" : "Unauthorized",
+        "type" : "string"
+      },
+      "forbidden" : {
+        "description" : "Forbidden",
+        "example" : "forbidden",
+        "title" : "Forbidden",
+        "type" : "string"
+      },
+      "recipe_model" : {
+        "example" : {
+          "oven_temp" : {
+            "amount" : 1
+          },
+          "source_book" : {
+            "notes" : [ "notes", "notes" ],
+            "isbn" : "isbn",
+            "title" : "title",
+            "authors" : [ "authors", "authors" ]
+          },
+          "oven_fan" : "Off",
+          "source_authors" : [ "source_authors", "source_authors" ],
+          "notes" : [ "notes", "notes" ],
+          "yields" : [ {
+            "unit" : "unit",
+            "amount" : 6
+          }, {
+            "unit" : "unit",
+            "amount" : 6
+          } ],
+          "name" : "name",
+          "ingredients" : [ {
+            "notes" : [ "notes", "notes" ],
+            "amounts" : [ {
+              "amount" : 0,
+              "unit" : "unit"
+            }, {
+              "amount" : 0,
+              "unit" : "unit"
+            } ],
+            "substitutions" : [ null, null ],
+            "name" : "name",
+            "processing" : [ "processing", "processing" ],
+            "usda_num" : "usda_num"
+          }, {
+            "notes" : [ "notes", "notes" ],
+            "amounts" : [ {
+              "amount" : 0,
+              "unit" : "unit"
+            }, {
+              "amount" : 0,
+              "unit" : "unit"
+            } ],
+            "substitutions" : [ null, null ],
+            "name" : "name",
+            "processing" : [ "processing", "processing" ],
+            "usda_num" : "usda_num"
+          } ],
+          "id" : "id",
+          "steps" : [ {
+            "haccp" : {
+              "critical_control_point" : "critical_control_point",
+              "control_point" : "control_point"
+            },
+            "notes" : [ "notes", "notes" ],
+            "step" : "step"
+          }, {
+            "haccp" : {
+              "critical_control_point" : "critical_control_point",
+              "control_point" : "control_point"
+            },
+            "notes" : [ "notes", "notes" ],
+            "step" : "step"
+          } ],
+          "source_url" : "source_url"
+        },
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "ingredients" : {
+            "items" : {
+              "$ref" : "#/components/schemas/recipe_ingredient_model"
+            },
+            "type" : "array"
+          },
+          "steps" : {
+            "items" : {
+              "$ref" : "#/components/schemas/recipe_model_steps"
+            },
+            "type" : "array"
+          },
+          "yields" : {
+            "items" : {
+              "$ref" : "#/components/schemas/recipe_model_yields"
+            },
+            "type" : "array"
+          },
+          "notes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "oven_fan" : {
+            "enum" : [ "Off", "Low", "High" ],
+            "type" : "string"
+          },
+          "oven_temp" : {
+            "$ref" : "#/components/schemas/recipe_model_oven_temp"
+          },
+          "source_url" : {
+            "type" : "string"
+          },
+          "source_authors" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "source_book" : {
+            "$ref" : "#/components/schemas/recipe_model_source_book"
+          }
+        },
+        "required" : [ "id", "ingredients", "name" ],
+        "title" : "recipe_model",
+        "type" : "object"
+      },
+      "notfound" : {
+        "description" : "Not Found",
+        "example" : "not found",
+        "title" : "Not Found",
+        "type" : "string"
+      },
+      "recipe_ingredient_model" : {
+        "example" : {
+          "notes" : [ "notes", "notes" ],
+          "amounts" : [ {
+            "amount" : 0,
+            "unit" : "unit"
+          }, {
+            "amount" : 0,
+            "unit" : "unit"
+          } ],
+          "substitutions" : [ null, null ],
+          "name" : "name",
+          "processing" : [ "processing", "processing" ],
+          "usda_num" : "usda_num"
+        },
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "amounts" : {
+            "items" : {
+              "$ref" : "#/components/schemas/recipe_ingredient_model_amounts"
+            },
+            "type" : "array"
+          },
+          "notes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "usda_num" : {
+            "type" : "string"
+          },
+          "processing" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "substitutions" : {
+            "items" : {
+              "$ref" : "#/components/schemas/recipe_ingredient_model"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "amounts", "name" ],
+        "title" : "recipe_ingredient_model",
+        "type" : "object"
+      },
+      "temp_unit" : {
+        "enum" : [ "C", "F" ],
+        "title" : "temp_unit",
+        "type" : "string"
+      },
+      "recipe_model_haccp" : {
+        "example" : {
+          "critical_control_point" : "critical_control_point",
+          "control_point" : "control_point"
+        },
+        "properties" : {
+          "control_point" : {
+            "type" : "string"
+          },
+          "critical_control_point" : {
+            "type" : "string"
+          }
+        }
+      },
+      "recipe_model_steps" : {
+        "example" : {
+          "haccp" : {
+            "critical_control_point" : "critical_control_point",
+            "control_point" : "control_point"
+          },
+          "notes" : [ "notes", "notes" ],
+          "step" : "step"
+        },
+        "properties" : {
+          "step" : {
+            "type" : "string"
+          },
+          "notes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "haccp" : {
+            "$ref" : "#/components/schemas/recipe_model_haccp"
+          }
+        },
+        "required" : [ "step" ]
+      },
+      "recipe_model_yields" : {
+        "example" : {
+          "unit" : "unit",
+          "amount" : 6
+        },
+        "properties" : {
+          "unit" : {
+            "type" : "string"
+          },
+          "amount" : {
+            "format" : "int64",
+            "type" : "integer"
+          }
+        },
+        "required" : [ "amount", "unit" ]
+      },
+      "recipe_model_oven_temp" : {
+        "example" : {
+          "amount" : 1
+        },
+        "properties" : {
+          "amount" : {
+            "type" : "integer"
+          },
+          "unit" : {
+            "$ref" : "#/components/schemas/temp_unit"
+          }
+        },
+        "required" : [ "amount", "unit" ]
+      },
+      "recipe_model_source_book" : {
+        "example" : {
+          "notes" : [ "notes", "notes" ],
+          "isbn" : "isbn",
+          "title" : "title",
+          "authors" : [ "authors", "authors" ]
+        },
+        "properties" : {
+          "authors" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "isbn" : {
+            "type" : "string"
+          },
+          "notes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "title" ]
+      },
+      "recipe_ingredient_model_amounts" : {
+        "example" : {
+          "amount" : 0,
+          "unit" : "unit"
+        },
+        "properties" : {
+          "amount" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "unit" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "amount", "unit" ]
+      }
+    }
+  }
+}

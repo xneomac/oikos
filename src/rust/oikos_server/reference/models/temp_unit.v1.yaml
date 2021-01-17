@@ -1,0 +1,5 @@
+type: string
+title: temp_unit
+enum:
+  - C
+  - F

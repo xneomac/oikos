@@ -1,0 +1,5 @@
+title: Info
+type: object
+properties:
+  version:
+    type: string

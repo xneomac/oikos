@@ -1,0 +1,13 @@
+type: string
+title: ingredient_category
+enum:
+  - Fruits et Légumes
+  - Poisson
+  - Boulangerie
+  - Boucherie
+  - Cave
+  - Épicerie salée
+  - Épicerie sucrée
+  - Boissons
+  - Frais
+  - Surgelés

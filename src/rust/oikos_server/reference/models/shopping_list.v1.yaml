@@ -1,0 +1,7 @@
+title: shopping_list
+type: object
+properties:
+  items:
+    type: array
+    items:
+      $ref: ''

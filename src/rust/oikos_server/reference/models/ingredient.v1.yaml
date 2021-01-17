@@ -1,0 +1,9 @@
+title: ingredient
+type: object
+properties:
+  name:
+    type: string
+  usda_number:
+    type: string
+  category:
+    $ref: ./ingredient_category.v1.yaml

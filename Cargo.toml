@@ -1,0 +1,21 @@
+[workspace]
+
+members = [
+    "src/rust/oikos_api",
+    "src/rust/oikos_server",
+    "src/rust/oikos_web",
+    "src/rust/open_recipe_format",
+    "src/rust/uniqdb",
+]
+
+[patch.crates-io]
+oikos_api = { path = "src/rust/oikos_api" }
+open_recipe_format = { path = "src/rust/open_recipe_format" }
+uniqdb = { path = "src/rust/uniqdb" }
+
+[profile.dev]
+incremental = true
+lto = false
+
+[profile.release]
+debug = false

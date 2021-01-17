@@ -1,0 +1,50 @@
+[package]
+name = "oikos_server"
+version = "0.1.0"
+authors = ["Noël Martignoni <noel.martignoni@easymov.fr>"]
+edition = "2018"
+
+[dependencies]
+actix-files = "0.3.0"
+actix-rt = "1.0.0"
+actix-service = "1.0.5"
+actix-web = "3.0.1"
+anyhow = "1.0.26"
+async-std = "1.5.0"
+async-trait = "0.1.24"
+github-rs = "0.7.0"
+log = "0.4.8"
+log4rs = "0.10.0"
+oikos_api = { version = "0.1.0", features = ["server"] }
+reqwest = { version = "0.10.1", features = ["blocking", "json"] }
+serde_json = "1.0"
+structopt = "0.3.9"
+thiserror = "1.0.11"
+dotenv = "0.15.0"
+base64 = "0.13.0"
+open_recipe_format = "0.1.0"
+uniqdb = "0.1.0"
+
+[dependencies.ordered-float]
+features = ["std"]
+version = "1.0.2"
+
+[dependencies.uom]
+features = ["usize"]
+version = "0.27.0"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0"
+
+[dependencies.tokio]
+features = ["sync", "fs"]
+version = "0.2.13"
+
+[dev-dependencies]
+approx = "0.3.2"
+bytecount = "0.6.0"
+geo-geojson = "0.1.0"
+geo-rand = "0.2.2"
+rand_pcg = "0.2.1"
+term_size = "0.3.1"

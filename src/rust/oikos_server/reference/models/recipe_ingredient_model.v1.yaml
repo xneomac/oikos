@@ -1,0 +1,35 @@
+title: recipe_ingredient_model
+type: object
+properties:
+  name:
+    type: string
+  amounts:
+    type: array
+    items:
+      type: object
+      properties:
+        amount:
+          type: integer
+          format: int64
+        unit:
+          type: string
+      required:
+        - amount
+        - unit
+  notes:
+    type: array
+    items:
+      type: string
+  usda_num:
+    type: string
+  processing:
+    type: array
+    items:
+      type: string
+  substitutions:
+    type: array
+    items:
+      $ref: ./recipe_ingredient_model.v1.yaml
+required:
+  - name
+  - amounts

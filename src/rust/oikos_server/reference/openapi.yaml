@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  description: This is the API for oikos server
+  title: Oikos API
+  version: 0.1.0
+  contact:
+    name: Support
+    url: 'https://easymov.com/support'
+    email: support@easymov.com
+servers:
+  - url: 'http://localhost:9000/api'
+    description: default
+tags:
+  - name: general
+paths:
+  /info:
+    get:
+      summary: Get info
+      description: ''
+      operationId: get_info
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: ./models/info.v1.yaml
+          description: OK
+      tags:
+        - general
+  /recipes:
+    post:
+      summary: Add recipe
+      operationId: add_recipe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/recipe_model.v1.yaml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: ./models/recipe_model.v1.yaml
+    get:
+      summary: Get all recipes
+      operationId: get_recipes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/recipe_list.v1.yaml
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: ./models/unauthorized.v1.yaml
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: ./models/forbidden.v1.yaml
+    parameters: []
+  '/recipes/{recipe_id}':
+    get:
+      summary: Get a recipe
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/recipe_model.v1.yaml
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: ./models/unauthorized.v1.yaml
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: ./models/forbidden.v1.yaml
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: ./models/notfound.v1.yaml
+      operationId: get_recipe_by_id
+      parameters: []
+    parameters:
+      - description: id of a recipe
+        in: path
+        name: recipe_id
+        required: true
+        example: 5dbafed03130352a54ef46cb
+        schema:
+          type: string
+    put:
+      summary: Update a recipe
+      operationId: update_recipe_by_id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/recipe_model.v1.yaml
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: ./models/unauthorized.v1.yaml
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: ./models/forbidden.v1.yaml
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: ./models/notfound.v1.yaml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: ./models/recipe_model.v1.yaml
+    delete:
+      summary: Delete a recipe
+      operationId: delete_recipe_by_id
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: ./models/unauthorized.v1.yaml
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: ./models/forbidden.v1.yaml
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: ./models/notfound.v1.yaml

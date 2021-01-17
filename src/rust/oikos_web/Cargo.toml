@@ -1,0 +1,24 @@
+[package]
+name = "oikos_web"
+version = "0.1.0"
+authors = ["Noel Martignoni <noel.martignoni@easymov.fr>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+anyhow = "1.0.26"
+serde = { version = "1.0.117", features = ["derive"] }
+serde_json = { version = "1.0.59" }
+wasm-bindgen = "0.2.67"
+yew = "0.17"
+yew-router = "0.14"
+oikos_api = { version = "0.1.0", default-features = false, features = ["wasm"] }
+log = "0.4.11"
+yewtil = "0.3.2"
+yew-state = "^0.4"
+thiserror = { version = "1.0.22" }
+lazy_static = "1.4.0"
+parking_lot = "0.10.0"
+uuid = { version = "0.8", features = ["v4", "wasm-bindgen"] }

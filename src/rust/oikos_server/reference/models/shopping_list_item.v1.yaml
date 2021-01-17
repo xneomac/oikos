@@ -1,0 +1,13 @@
+title: shopping_list_item
+type: object
+properties:
+  ingredient:
+    type: string
+  amount:
+    type: string
+  unit:
+    type: string
+required:
+  - ingredient
+  - amount
+  - unit

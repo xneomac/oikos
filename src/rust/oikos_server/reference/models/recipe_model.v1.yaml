@@ -1,0 +1,91 @@
+title: recipe_model
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  ingredients:
+    type: array
+    items:
+      $ref: ./recipe_ingredient_model.v1.yaml
+  steps:
+    type: array
+    items:
+      type: object
+      properties:
+        step:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+        haccp:
+          type: object
+          properties:
+            control_point:
+              type: string
+            critical_control_point:
+              type: string
+      required:
+        - step
+  yields:
+    type: array
+    items:
+      type: object
+      properties:
+        unit:
+          type: string
+        amount:
+          type: integer
+          format: int64
+      required:
+        - unit
+        - amount
+  notes:
+    type: array
+    items:
+      type: string
+  oven_fan:
+    type: string
+    enum:
+      - 'Off'
+      - Low
+      - High
+  oven_temp:
+    type: object
+    properties:
+      amount:
+        type: integer
+      unit:
+        $ref: ./temp_unit.v1.yaml
+    required:
+      - amount
+      - unit
+  source_url:
+    type: string
+  source_authors:
+    type: array
+    items:
+      type: string
+  source_book:
+    type: object
+    properties:
+      authors:
+        type: array
+        items:
+          type: string
+      title:
+        type: string
+      isbn:
+        type: string
+      notes:
+        type: array
+        items:
+          type: string
+    required:
+      - title
+required:
+  - id
+  - name
+  - ingredients
