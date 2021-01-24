@@ -29,19 +29,16 @@ properties:
               type: string
       required:
         - step
-  yields:
-    type: array
-    items:
-      type: object
-      properties:
-        unit:
-          type: string
-        amount:
-          type: integer
-          format: int64
-      required:
-        - unit
-        - amount
+  quantity:
+    type: object
+    properties:
+      unit:
+        type: string
+      amount:
+        type: number
+    required:
+      - unit
+      - amount
   notes:
     type: array
     items:

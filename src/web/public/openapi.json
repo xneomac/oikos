@@ -410,37 +410,24 @@
           },
           "oven_fan" : "Off",
           "source_authors" : [ "source_authors", "source_authors" ],
+          "quantity" : {
+            "unit" : "unit",
+            "amount" : 6.027456183070403
+          },
           "notes" : [ "notes", "notes" ],
-          "yields" : [ {
-            "unit" : "unit",
-            "amount" : 6
-          }, {
-            "unit" : "unit",
-            "amount" : 6
-          } ],
           "name" : "name",
           "ingredients" : [ {
+            "amount" : 0.8008281904610115,
+            "unit" : "unit",
             "notes" : [ "notes", "notes" ],
-            "amounts" : [ {
-              "amount" : 0,
-              "unit" : "unit"
-            }, {
-              "amount" : 0,
-              "unit" : "unit"
-            } ],
             "substitutions" : [ null, null ],
             "name" : "name",
             "processing" : [ "processing", "processing" ],
             "usda_num" : "usda_num"
           }, {
+            "amount" : 0.8008281904610115,
+            "unit" : "unit",
             "notes" : [ "notes", "notes" ],
-            "amounts" : [ {
-              "amount" : 0,
-              "unit" : "unit"
-            }, {
-              "amount" : 0,
-              "unit" : "unit"
-            } ],
             "substitutions" : [ null, null ],
             "name" : "name",
             "processing" : [ "processing", "processing" ],
@@ -483,11 +470,8 @@
             },
             "type" : "array"
           },
-          "yields" : {
-            "items" : {
-              "$ref" : "#/components/schemas/recipe_model_yields"
-            },
-            "type" : "array"
+          "quantity" : {
+            "$ref" : "#/components/schemas/recipe_model_quantity"
           },
           "notes" : {
             "items" : {
@@ -558,14 +542,9 @@
       },
       "recipe_ingredient_model" : {
         "example" : {
+          "amount" : 0.8008281904610115,
+          "unit" : "unit",
           "notes" : [ "notes", "notes" ],
-          "amounts" : [ {
-            "amount" : 0,
-            "unit" : "unit"
-          }, {
-            "amount" : 0,
-            "unit" : "unit"
-          } ],
           "substitutions" : [ null, null ],
           "name" : "name",
           "processing" : [ "processing", "processing" ],
@@ -574,12 +553,6 @@
         "properties" : {
           "name" : {
             "type" : "string"
-          },
-          "amounts" : {
-            "items" : {
-              "$ref" : "#/components/schemas/recipe_ingredient_model_amounts"
-            },
-            "type" : "array"
           },
           "notes" : {
             "items" : {
@@ -601,9 +574,15 @@
               "$ref" : "#/components/schemas/recipe_ingredient_model"
             },
             "type" : "array"
+          },
+          "amount" : {
+            "type" : "number"
+          },
+          "unit" : {
+            "type" : "string"
           }
         },
-        "required" : [ "amounts", "name" ],
+        "required" : [ "amount", "name", "unit" ],
         "title" : "recipe_ingredient_model",
         "type" : "object"
       },
@@ -651,18 +630,17 @@
         },
         "required" : [ "step" ]
       },
-      "recipe_model_yields" : {
+      "recipe_model_quantity" : {
         "example" : {
           "unit" : "unit",
-          "amount" : 6
+          "amount" : 6.027456183070403
         },
         "properties" : {
           "unit" : {
             "type" : "string"
           },
           "amount" : {
-            "format" : "int64",
-            "type" : "integer"
+            "type" : "number"
           }
         },
         "required" : [ "amount", "unit" ]
@@ -709,22 +687,6 @@
           }
         },
         "required" : [ "title" ]
-      },
-      "recipe_ingredient_model_amounts" : {
-        "example" : {
-          "amount" : 0,
-          "unit" : "unit"
-        },
-        "properties" : {
-          "amount" : {
-            "format" : "int64",
-            "type" : "integer"
-          },
-          "unit" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "amount", "unit" ]
       }
     },
     "securitySchemes" : { }

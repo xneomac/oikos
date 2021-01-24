@@ -3,19 +3,6 @@ type: object
 properties:
   name:
     type: string
-  amounts:
-    type: array
-    items:
-      type: object
-      properties:
-        amount:
-          type: integer
-          format: int64
-        unit:
-          type: string
-      required:
-        - amount
-        - unit
   notes:
     type: array
     items:
@@ -30,6 +17,11 @@ properties:
     type: array
     items:
       $ref: ./recipe_ingredient_model.v1.yaml
+  amount:
+    type: number
+  unit:
+    type: string
 required:
   - name
-  - amounts
+  - amount
+  - unit

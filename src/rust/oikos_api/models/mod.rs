@@ -37,8 +37,8 @@ pub mod components {
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct RecipeIngredientModel {
-            #[serde(rename = "amounts")]
-            pub amounts: Vec<components::schemas::RecipeIngredientModelAmounts>,
+            #[serde(rename = "amount")]
+            pub amount: f64,
             #[serde(rename = "name")]
             pub name: String,
             #[serde(rename = "notes")]
@@ -50,17 +50,11 @@ pub mod components {
             #[serde(rename = "substitutions")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub substitutions: Option<Vec<components::schemas::RecipeIngredientModel>>,
+            #[serde(rename = "unit")]
+            pub unit: String,
             #[serde(rename = "usda_num")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub usda_num: Option<String>,
-        }
-
-        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-        pub struct RecipeIngredientModelAmounts {
-            #[serde(rename = "amount")]
-            pub amount: i64,
-            #[serde(rename = "unit")]
-            pub unit: String,
         }
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -113,6 +107,9 @@ pub mod components {
             #[serde(rename = "oven_temp")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub oven_temp: Option<components::schemas::RecipeModelOvenTemp>,
+            #[serde(rename = "quantity")]
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub quantity: Option<components::schemas::RecipeModelQuantity>,
             #[serde(rename = "source_authors")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub source_authors: Option<Vec<String>>,
@@ -125,9 +122,6 @@ pub mod components {
             #[serde(rename = "steps")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub steps: Option<Vec<components::schemas::RecipeModelSteps>>,
-            #[serde(rename = "yields")]
-            #[serde(skip_serializing_if = "Option::is_none")]
-            pub yields: Option<Vec<components::schemas::RecipeModelYields>>,
         }
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -146,6 +140,14 @@ pub mod components {
             pub amount: i64,
             #[serde(rename = "unit")]
             pub unit: components::schemas::TempUnit,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct RecipeModelQuantity {
+            #[serde(rename = "amount")]
+            pub amount: f64,
+            #[serde(rename = "unit")]
+            pub unit: String,
         }
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -173,14 +175,6 @@ pub mod components {
             pub notes: Option<Vec<String>>,
             #[serde(rename = "step")]
             pub step: String,
-        }
-
-        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-        pub struct RecipeModelYields {
-            #[serde(rename = "amount")]
-            pub amount: i64,
-            #[serde(rename = "unit")]
-            pub unit: String,
         }
 
         #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize)]

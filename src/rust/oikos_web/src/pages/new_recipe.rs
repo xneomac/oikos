@@ -1,9 +1,7 @@
 use crate::components::Token;
 use crate::root::{AppAnchor, AppRoute};
 use crate::services::{Error, RecipeService};
-use oikos_api::components::schemas::{
-    RecipeIngredientModel, RecipeIngredientModelAmounts, RecipeModel, RecipeModelSteps,
-};
+use oikos_api::components::schemas::{RecipeIngredientModel, RecipeModel, RecipeModelSteps};
 use uuid::Uuid;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
@@ -62,7 +60,7 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
                 source_book: None,
                 source_url: None,
                 steps: None,
-                yields: None,
+                quantity: None,
             },
             task: None,
             response: link.callback(Message::OnRecipeAdd),
@@ -88,14 +86,12 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
             }
             Message::OnIngredientAmountChange(index, amount) => {
                 if let Some(ingredient) = self.recipe.ingredients.get_mut(index) {
-                    let ingredient_amount = ingredient.amounts.get_mut(0).unwrap();
-                    ingredient_amount.amount = amount.parse::<i64>().unwrap();
+                    ingredient.amount = amount.parse::<f64>().unwrap();
                 }
             }
             Message::OnIngredientUnitChange(index, unit) => {
                 if let Some(ingredient) = self.recipe.ingredients.get_mut(index) {
-                    let ingredient_amount = ingredient.amounts.get_mut(0).unwrap();
-                    ingredient_amount.unit = unit;
+                    ingredient.unit = unit;
                 }
             }
             Message::OnIngredientNameChange(index, name) => {
@@ -105,10 +101,8 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
             }
             Message::OnIngredientAdd => {
                 self.recipe.ingredients.push(RecipeIngredientModel {
-                    amounts: vec![RecipeIngredientModelAmounts {
-                        amount: 1,
-                        unit: "".to_string(),
-                    }],
+                    amount: 1.0,
+                    unit: "".to_string(),
                     name: "".to_string(),
                     notes: None,
                     processing: None,
@@ -161,7 +155,6 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
             .iter()
             .enumerate()
             .map(|(index, ingredient)| {
-                let amount = ingredient.amounts.get(0).unwrap();
                 let on_ingredient_amount_change_callback = self
                     .link
                     .callback(move |e: InputData| Message::OnIngredientAmountChange(index, e.value));
@@ -178,10 +171,10 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
                 html! {
                     <div class="row">
                         <div class="input-field col s2">
-                            <input value={amount.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
+                            <input value={ingredient.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
                         </div>
                         <div class="input-field col s2">
-                            <input value={amount.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
+                            <input value={ingredient.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
                         </div>
                         <div class="input-field col s6">
                             <input value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
@@ -193,6 +186,7 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
                 }
             })
             .collect::<Html>();
+
         let steps = match self.recipe.clone()
             .steps {
             Some(steps) => steps.iter().enumerate()

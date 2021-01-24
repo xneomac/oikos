@@ -3,7 +3,8 @@
 ## Todo
 
 - [ ] servings
-- [ ] bring online
+- [ ] bring online frontend
+- [ ] bring online backend
 - [ ] import OpenRecipe
 - [ ] planning
 - [ ] shopping list

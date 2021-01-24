@@ -87,16 +87,14 @@ impl Component for RecipePage {
             Message::OnIngredientAmountChange(index, amount) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        let ingredient_amount = ingredient.amounts.get_mut(0).unwrap();
-                        ingredient_amount.amount = amount.parse::<i64>().unwrap();
+                        ingredient.amount = amount.parse::<f64>().unwrap();
                     }
                 }
             }
             Message::OnIngredientUnitChange(index, unit) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        let ingredient_amount = ingredient.amounts.get_mut(0).unwrap();
-                        ingredient_amount.unit = unit;
+                        ingredient.unit = unit;
                     }
                 }
             }
@@ -110,10 +108,8 @@ impl Component for RecipePage {
             Message::OnIngredientAdd => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     recipe.ingredients.push(RecipeIngredientModel {
-                        amounts: vec![RecipeIngredientModelAmounts {
-                            amount: 1,
-                            unit: "".to_string(),
-                        }],
+                        amount: 1.0,
+                        unit: "".to_string(),
                         name: "".to_string(),
                         notes: None,
                         processing: None,
@@ -177,7 +173,6 @@ impl Component for RecipePage {
                     .iter()
                     .enumerate()
                     .map(|(index, ingredient)| {
-                        let amount = ingredient.amounts.get(0).unwrap();
                         let on_ingredient_amount_change_callback = self
                             .link
                             .callback(move |e: InputData| Message::OnIngredientAmountChange(index, e.value));
@@ -194,10 +189,10 @@ impl Component for RecipePage {
                         html! {
                             <div class="row">
                                 <div class="input-field col s2">
-                                    <input value={amount.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
+                                    <input value={ingredient.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
                                 </div>
                                 <div class="input-field col s2">
-                                    <input value={amount.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
+                                    <input value={ingredient.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
                                 </div>
                                 <div class="input-field col s6">
                                     <input value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
@@ -234,6 +229,43 @@ impl Component for RecipePage {
                         None => html!{}
                     };
 
+                let quantity = match recipe.quantity {
+                    Some(quantity) => html! {
+                        <div class="row">
+                            <div class="input-field col s3">
+                                <input value={quantity.amount} type="text" class="validate"/>
+                            </div>
+                            <div class="input-field col s9">
+                                <input value={quantity.unit} type="text" class="validate"/>
+                            </div>
+                        </div>
+                    },
+                    None => html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <a class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"quantité"}</a>
+                            </div>
+                        </div>
+                    },
+                };
+
+                let source_url = match recipe.source_url {
+                    Some(source_url) => html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input value={source_url} type="text" class="validate"/>
+                            </div>
+                        </div>
+                    },
+                    None => html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <a class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"source"}</a>
+                            </div>
+                        </div>
+                    },
+                };
+
                 html! {
                     <>
                         <Token/>
@@ -262,6 +294,7 @@ impl Component for RecipePage {
                                                 <input value={recipe.name} oninput={on_name_change_callback} type="text" class="validate"/>
                                             </div>
                                         </div>
+                                        {quantity}
                                     </form>
                                 </div>
                             </div>
@@ -273,7 +306,7 @@ impl Component for RecipePage {
                                         {ingredients}
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <a onclick={on_ingredient_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ajouter"}</a>
+                                                <a onclick={on_ingredient_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ingrédient"}</a>
                                             </div>
                                         </div>
                                     </form>
@@ -287,9 +320,17 @@ impl Component for RecipePage {
                                         {steps}
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <a onclick={on_step_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ajouter"}</a>
+                                                <a onclick={on_step_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"instruction"}</a>
                                             </div>
                                         </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="section">
+                                <div class="row">
+                                    <form class="col s12">
+                                        {source_url}
                                     </form>
                                 </div>
                             </div>
