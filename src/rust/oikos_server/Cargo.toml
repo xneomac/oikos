@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Noël Martignoni <noel.martignoni@easymov.fr>"]
 edition = "2018"
 
+[[bin]]
+name = "oikos_server"
+path = "src/main.rs"
+
 [dependencies]
 actix-files = "0.3.0"
 actix-rt = "1.0.0"

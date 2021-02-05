@@ -1,0 +1,19 @@
+[Unit]
+Description=oikos service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+Environment=HOST=0.0.0.0
+Environment=APP_PATH=app_path
+Environment=LOG_CONFIG_FILE=log4rs.yml
+Environment=GITHUB_CLIENT_ID=github_client_id
+Environment=GITHUB_CLIENT_SECRET=github_client_secret
+User=xneomac
+ExecStart=oikos_server
+
+[Install]
+WantedBy=multi-user.target

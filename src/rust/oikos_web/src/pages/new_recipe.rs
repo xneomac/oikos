@@ -1,7 +1,7 @@
 use crate::components::Token;
 use crate::root::{AppAnchor, AppRoute};
 use crate::services::{Error, RecipeService};
-use oikos_api::components::schemas::{RecipeIngredientModel, RecipeModel, RecipeModelSteps};
+use oikos_api::components::schemas::RecipeModel;
 use uuid::Uuid;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
@@ -17,20 +17,13 @@ pub struct NewRecipePage<STATE: RouterState = ()> {
     recipe: RecipeModel,
     task: Option<FetchTask>,
     response: Callback<Result<RecipeModel, Error>>,
+    loading: bool,
 }
 
 pub enum Message {
     OnAdd,
     OnRecipeAdd(Result<RecipeModel, Error>),
     OnNameChange(String),
-    OnIngredientAmountChange(usize, String),
-    OnIngredientUnitChange(usize, String),
-    OnIngredientNameChange(usize, String),
-    OnIngredientDelete(usize),
-    OnIngredientAdd,
-    OnStepChange(usize, String),
-    OnStepDelete(usize),
-    OnStepAdd,
 }
 
 impl<STATE: RouterState> NewRecipePage<STATE> {
@@ -65,12 +58,14 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
             task: None,
             response: link.callback(Message::OnRecipeAdd),
             link,
+            loading: false,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Message::OnAdd => {
+                self.loading = true;
                 self.add_recipe();
             }
             Message::OnRecipeAdd(Ok(recipe)) => {
@@ -83,56 +78,6 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
             }
             Message::OnNameChange(name) => {
                 self.recipe.name = name;
-            }
-            Message::OnIngredientAmountChange(index, amount) => {
-                if let Some(ingredient) = self.recipe.ingredients.get_mut(index) {
-                    ingredient.amount = amount.parse::<f64>().unwrap();
-                }
-            }
-            Message::OnIngredientUnitChange(index, unit) => {
-                if let Some(ingredient) = self.recipe.ingredients.get_mut(index) {
-                    ingredient.unit = unit;
-                }
-            }
-            Message::OnIngredientNameChange(index, name) => {
-                if let Some(ingredient) = self.recipe.ingredients.get_mut(index) {
-                    ingredient.name = name;
-                }
-            }
-            Message::OnIngredientAdd => {
-                self.recipe.ingredients.push(RecipeIngredientModel {
-                    amount: 1.0,
-                    unit: "".to_string(),
-                    name: "".to_string(),
-                    notes: None,
-                    processing: None,
-                    substitutions: None,
-                    usda_num: None,
-                });
-            }
-            Message::OnIngredientDelete(index) => {
-                self.recipe.ingredients.remove(index);
-            }
-            Message::OnStepChange(index, step) => {
-                if let Some(steps) = self.recipe.steps.as_mut() {
-                    if let Some(selected_step) = steps.get_mut(index) {
-                        selected_step.step = step;
-                    }
-                }
-            }
-            Message::OnStepAdd => {
-                if let Some(steps) = self.recipe.steps.as_mut() {
-                    steps.push(RecipeModelSteps {
-                        haccp: None,
-                        notes: None,
-                        step: "".to_string(),
-                    });
-                }
-            }
-            Message::OnStepDelete(index) => {
-                if let Some(steps) = self.recipe.steps.as_mut() {
-                    steps.remove(index);
-                }
             }
         }
         true
@@ -147,69 +92,41 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
         let on_name_change_callback = self
             .link
             .callback(|e: InputData| Message::OnNameChange(e.value));
-        let on_ingredient_add_callback = self.link.callback(|_| Message::OnIngredientAdd);
-        let on_step_add_callback = self.link.callback(|_| Message::OnStepAdd);
 
-        let ingredients = self.recipe.clone()
-            .ingredients
-            .iter()
-            .enumerate()
-            .map(|(index, ingredient)| {
-                let on_ingredient_amount_change_callback = self
-                    .link
-                    .callback(move |e: InputData| Message::OnIngredientAmountChange(index, e.value));
-                let on_ingredient_unit_change_callback = self
-                    .link
-                    .callback(move |e: InputData| Message::OnIngredientUnitChange(index, e.value));
-                let on_ingredient_name_change_callback = self
-                    .link
-                    .callback(move |e: InputData| Message::OnIngredientNameChange(index, e.value));
-                let on_ingredient_delete_callback = self
-                    .link
-                    .callback(move |_| Message::OnIngredientDelete(index));
-
-                html! {
-                    <div class="row">
-                        <div class="input-field col s2">
-                            <input value={ingredient.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
-                        </div>
-                        <div class="input-field col s2">
-                            <input value={ingredient.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
-                        </div>
-                        <div class="input-field col s6">
-                            <input value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
-                        </div>
-                        <div class="input-field col s2">
-                            <a onclick={on_ingredient_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
+        let content = if self.loading {
+            html! {
+                <div class="container">
+                    <div class="section">
+                        <div class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-red-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
                         </div>
                     </div>
-                }
-            })
-            .collect::<Html>();
-
-        let steps = match self.recipe.clone()
-            .steps {
-            Some(steps) => steps.iter().enumerate()
-            .map(|(index, step)| {
-                let on_step_change_callback = self
-                    .link
-                    .callback(move |e: InputData| Message::OnStepChange(index, e.value));
-                let on_step_delete_callback = self
-                    .link
-                    .callback(move |_| Message::OnStepDelete(index));
-
-                html! {
-                    <div class="row">
-                        <div class="input-field col s10">
-                            <textarea oninput={on_step_change_callback} value={step.step.clone()} class="materialize-textarea"></textarea>
-                        </div>
-                        <div class="input-field col s2">
-                            <a onclick={on_step_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
+                </div>
+            }
+        } else {
+            html! {
+                <div class="container">
+                    <div class="section">
+                        <div class="row">
+                            <form class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input value={self.recipe.name.clone()} oninput={on_name_change_callback} type="text" class="validate"/>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                }
-            }).collect::<Html>(),
-            None => html!{}
+                </div>
+            }
         };
 
         html! {
@@ -230,47 +147,7 @@ impl<STATE: RouterState> Component for NewRecipePage<STATE> {
                         </div>
                     </nav>
                 </div>
-                <div class="container">
-                    <div class="section">
-                        <div class="row">
-                            <form class="col s12">
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input value={self.recipe.name.clone()} oninput={on_name_change_callback} type="text" class="validate"/>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <h5>{"Ingrédients"}</h5>
-                        <div class="row">
-                            <form class="col s12">
-                                {ingredients}
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <a onclick={on_ingredient_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ajouter"}</a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="section">
-                        <h5>{"Instructions"}</h5>
-                        <div class="row">
-                            <form class="col s12">
-                                {steps}
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <a onclick={on_step_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ajouter"}</a>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                {content}
             </>
         }
     }

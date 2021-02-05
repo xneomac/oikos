@@ -2,8 +2,6 @@
 
 ## Todo
 
-- [ ] bring online frontend
-- [ ] bring online backend
 - [ ] import OpenRecipe
 - [ ] planning
 - [ ] shopping list
@@ -16,6 +14,7 @@
 
 ## Done
 
+- [x] bring online
 - [x] servings
 - [x] auth
 - [x] format openapi

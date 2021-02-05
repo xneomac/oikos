@@ -25,6 +25,13 @@ pub enum Message {
     OnStepChange(usize, String),
     OnStepDelete(usize),
     OnStepAdd,
+    OnSourceUrlAdd,
+    OnSourceUrlChange(String),
+    OnSourceUrlDelete,
+    OnQuantityAdd,
+    OnQuantityAmountChange(String),
+    OnQuantityUnitChange(String),
+    OnQuantityDelete,
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -140,6 +147,12 @@ impl Component for RecipePage {
                             notes: None,
                             step: "".to_string(),
                         });
+                    } else {
+                        recipe.steps = Some(vec![RecipeModelSteps {
+                            haccp: None,
+                            notes: None,
+                            step: "".to_string(),
+                        }]);
                     }
                 }
             }
@@ -148,6 +161,48 @@ impl Component for RecipePage {
                     if let Some(steps) = recipe.steps.as_mut() {
                         steps.remove(index);
                     }
+                }
+            }
+            Message::OnSourceUrlAdd => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    recipe.source_url = Some("".to_string())
+                }
+            }
+            Message::OnSourceUrlChange(source_url) => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    recipe.source_url = Some(source_url)
+                }
+            }
+            Message::OnSourceUrlDelete => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    recipe.source_url = None
+                }
+            }
+            Message::OnQuantityAdd => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    recipe.quantity = Some(RecipeModelQuantity {
+                        amount: 1.0,
+                        unit: "personne".to_string(),
+                    })
+                }
+            }
+            Message::OnQuantityAmountChange(quantity_amount) => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    if let Some(quantity) = recipe.quantity.as_mut() {
+                        quantity.amount = quantity_amount.parse::<f64>().unwrap();
+                    }
+                }
+            }
+            Message::OnQuantityUnitChange(quantity_unit) => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    if let Some(quantity) = recipe.quantity.as_mut() {
+                        quantity.unit = quantity_unit;
+                    }
+                }
+            }
+            Message::OnQuantityDelete => {
+                if let Some(recipe) = self.recipe.as_mut() {
+                    recipe.quantity = None
                 }
             }
         }
@@ -165,6 +220,20 @@ impl Component for RecipePage {
             .callback(|e: InputData| Message::OnNameChange(e.value));
         let on_ingredient_add_callback = self.link.callback(|_| Message::OnIngredientAdd);
         let on_step_add_callback = self.link.callback(|_| Message::OnStepAdd);
+        let on_quantity_add_callback = self.link.callback(|_| Message::OnQuantityAdd);
+        let on_source_url_add_callback = self.link.callback(|_| Message::OnSourceUrlAdd);
+        let on_quantity_delete_callback = self.link.callback(|_| Message::OnQuantityDelete);
+        let on_source_url_delete_callback = self.link.callback(|_| Message::OnSourceUrlDelete);
+
+        let on_quantity_amount_change_callback = self
+            .link
+            .callback(|e: InputData| Message::OnQuantityAmountChange(e.value));
+        let on_quantity_unit_change_callback = self
+            .link
+            .callback(|e: InputData| Message::OnQuantityUnitChange(e.value));
+        let on_source_url_change_callback = self
+            .link
+            .callback(|e: InputData| Message::OnSourceUrlChange(e.value));
 
         match self.recipe.clone() {
             Some(recipe) => {
@@ -233,17 +302,20 @@ impl Component for RecipePage {
                     Some(quantity) => html! {
                         <div class="row">
                             <div class="input-field col s3">
-                                <input value={quantity.amount} type="text" class="validate"/>
+                                <input oninput={on_quantity_amount_change_callback} value={quantity.amount} type="text" class="validate"/>
                             </div>
-                            <div class="input-field col s9">
-                                <input value={quantity.unit} type="text" class="validate"/>
+                            <div class="input-field col s7">
+                                <input oninput={on_quantity_unit_change_callback} value={quantity.unit} type="text" class="validate"/>
+                            </div>
+                            <div class="input-field col s2">
+                                <a onclick={on_quantity_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
                             </div>
                         </div>
                     },
                     None => html! {
                         <div class="row">
                             <div class="input-field col s12">
-                                <a class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"quantité"}</a>
+                                <a onclick={on_quantity_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"quantité"}</a>
                             </div>
                         </div>
                     },
@@ -252,15 +324,18 @@ impl Component for RecipePage {
                 let source_url = match recipe.source_url {
                     Some(source_url) => html! {
                         <div class="row">
-                            <div class="input-field col s12">
-                                <input value={source_url} type="text" class="validate"/>
+                            <div class="input-field col s10">
+                                <input oninput={on_source_url_change_callback} value={source_url} type="text" class="validate"/>
+                            </div>
+                            <div class="input-field col s2">
+                                <a onclick={on_source_url_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
                             </div>
                         </div>
                     },
                     None => html! {
                         <div class="row">
                             <div class="input-field col s12">
-                                <a class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"source"}</a>
+                                <a onclick={on_source_url_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"source"}</a>
                             </div>
                         </div>
                     },
