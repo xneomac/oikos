@@ -31,7 +31,7 @@ struct Cli {
     #[structopt(
         long = "app_path",
         env = "APP_PATH",
-        default_value = "src/rust/oikos_web/static"
+        default_value = "src/rust/oikos_server/static"
     )]
     app_path: String,
 }

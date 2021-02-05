@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Noël Martignoni <noel.martignoni@easymov.fr>"]
 edition = "2018"
 
+[lib]
+name = "open_recipe_format"
+path = "src/lib.rs"
+
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"

@@ -1,3 +1,24 @@
+# nix
+
+build package +ARGS="":
+  nix-build nix/default.nix -I project_dir=$PWD --argstr github_client_id $GITHUB_CLIENT_ID --argstr github_client_secret $GITHUB_CLIENT_SECRET --no-out-link --show-trace -A {{package}} {{ARGS}}
+
+store-path package:
+  nix-store -q --outputs $(nix-instantiate ./nix/default.nix -I project_dir=$PWD --argstr github_client_id $GITHUB_CLIENT_ID --argstr github_client_secret $GITHUB_CLIENT_SECRET -A {{package}}) | cat
+
+# deploy
+
+deploy ip:
+  #!/usr/bin/env bash
+  source .env
+  just build-front
+  just build oikos_service
+  nix-copy-closure --to root@{{ip}} `just store-path oikos_service`
+  ssh root@{{ip}} nix-env -i `just store-path oikos_service`
+  ssh root@{{ip}} cp /root/.nix-profile/lib/systemd/system/oikos.service /etc/systemd/system/
+  ssh root@{{ip}} systemctl daemon-reload
+  ssh root@{{ip}} systemctl restart oikos
+
 # Openapi
 
 generator +OPTIONS="":
@@ -15,7 +36,7 @@ openapi:
   openapi_generator src/openapi_templates/rust ./src/web/public/openapi.json -d ./src/rust/oikos_api
   cargo fmt
 
-build:
+build-front:
   #!/usr/bin/env bash
   cd src/rust/oikos_web
-  wasm-pack build --target web --out-name wasm --out-dir ./static
+  wasm-pack build --target web --out-name wasm --out-dir ../oikos_server/static
