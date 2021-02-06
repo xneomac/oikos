@@ -1,6 +1,6 @@
 use crate::components::Tabs;
 use crate::components::Token;
-use crate::root::AppRoute;
+use crate::root::{AppRoute, DataHandle};
 use crate::services::{Error, RecipeService};
 use oikos_api::components::schemas::*;
 use yew::{prelude::*, services::fetch::FetchTask};
@@ -9,12 +9,14 @@ use yew_router::{
     prelude::{Route, RouteAgentDispatcher},
     RouterState,
 };
+use yew_state::SharedStateComponent;
+use yewtil::NeqAssign;
 
-pub struct RecipeListPage<STATE: RouterState = ()> {
+pub struct RecipeListPageComponent<STATE: RouterState = ()> {
+    handle: DataHandle,
     recipes_service: RecipeService,
     link: ComponentLink<Self>,
     router: RouteAgentDispatcher<STATE>,
-    recipes: Option<RecipeList>,
     task: Option<FetchTask>,
     response: Callback<Result<RecipeList, Error>>,
 }
@@ -24,22 +26,22 @@ pub enum Message {
     ChangeRoute(AppRoute),
 }
 
-impl<STATE: RouterState> RecipeListPage<STATE> {
+impl<STATE: RouterState> RecipeListPageComponent<STATE> {
     fn request(&mut self) {
         self.task = Some(self.recipes_service.get_recipes(self.response.clone()));
     }
 }
 
-impl<STATE: RouterState> Component for RecipeListPage<STATE> {
+impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
     type Message = Message;
-    type Properties = ();
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    type Properties = DataHandle;
+    fn create(handle: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
+            handle,
             recipes_service: RecipeService::new(),
             response: link.callback(Message::Response),
             link,
             router: RouteAgentDispatcher::new(),
-            recipes: None,
             task: None,
         }
     }
@@ -53,7 +55,8 @@ impl<STATE: RouterState> Component for RecipeListPage<STATE> {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Message::Response(Ok(recipes)) => {
-                self.recipes = Some(recipes);
+                self.handle
+                    .reduce(move |state| state.recipes = Some(recipes));
                 self.task = None;
             }
             Message::Response(Err(_)) => {
@@ -67,8 +70,8 @@ impl<STATE: RouterState> Component for RecipeListPage<STATE> {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, handle: Self::Properties) -> ShouldRender {
+        self.handle.neq_assign(handle)
     }
 
     fn view(&self) -> Html {
@@ -77,6 +80,8 @@ impl<STATE: RouterState> Component for RecipeListPage<STATE> {
             .callback(move |_| Message::ChangeRoute(AppRoute::NewRecipe));
 
         let recipe_list = self
+            .handle
+            .state()
             .recipes
             .clone()
             .map(|recipe_list| {
@@ -120,3 +125,5 @@ impl<STATE: RouterState> Component for RecipeListPage<STATE> {
         }
     }
 }
+
+pub type RecipeListPage = SharedStateComponent<RecipeListPageComponent>;

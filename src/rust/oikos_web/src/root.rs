@@ -1,6 +1,9 @@
 use super::pages::*;
+use oikos_api::components::schemas::RecipeList;
+use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::{components::RouterAnchor, prelude::*};
+use yew_state::{Area, SharedHandle, SharedStateComponent, Storable};
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
@@ -25,7 +28,22 @@ pub enum AppRoute {
 pub type AppRouter = Router<AppRoute>;
 pub type AppAnchor = RouterAnchor<AppRoute>;
 
-pub struct RootComponent;
+#[derive(Default, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DataState {
+    pub recipes: Option<RecipeList>,
+}
+
+impl Storable for DataState {
+    fn area() -> Area {
+        Area::Local
+    }
+}
+
+pub type DataHandle = SharedHandle<DataState>;
+
+pub struct RootComponent {
+    _handle: DataHandle,
+}
 
 impl RootComponent {
     fn switch(switch: AppRoute) -> Html {
@@ -60,9 +78,9 @@ impl RootComponent {
 
 impl Component for RootComponent {
     type Message = ();
-    type Properties = ();
-    fn create(_: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Self
+    type Properties = DataHandle;
+    fn create(handle: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        Self { _handle: handle }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -81,3 +99,5 @@ impl Component for RootComponent {
         }
     }
 }
+
+pub type Root = SharedStateComponent<RootComponent>;
