@@ -23,5 +23,3 @@ properties:
     type: string
 required:
   - name
-  - amount
-  - unit

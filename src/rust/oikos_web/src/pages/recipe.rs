@@ -94,14 +94,14 @@ impl Component for RecipePage {
             Message::OnIngredientAmountChange(index, amount) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        ingredient.amount = amount.parse::<f64>().unwrap();
+                        ingredient.amount = Some(amount.parse::<f64>().unwrap());
                     }
                 }
             }
             Message::OnIngredientUnitChange(index, unit) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        ingredient.unit = unit;
+                        ingredient.unit = Some(unit);
                     }
                 }
             }
@@ -115,8 +115,8 @@ impl Component for RecipePage {
             Message::OnIngredientAdd => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     recipe.ingredients.push(RecipeIngredientModel {
-                        amount: 1.0,
-                        unit: "".to_string(),
+                        amount: None,
+                        unit: None,
                         name: "".to_string(),
                         notes: None,
                         processing: None,
@@ -255,13 +255,25 @@ impl Component for RecipePage {
                             .link
                             .callback(move |_| Message::OnIngredientDelete(index));
 
+                        let ingredient_amount = if let Some(amount) = ingredient.amount {
+                            amount
+                        } else {
+                            0.0
+                        };
+
+                        let ingredient_unit = if let Some(unit) = &ingredient.unit {
+                            unit.clone()
+                        } else {
+                            "".to_string()
+                        };
+
                         html! {
                             <div class="row">
                                 <div class="input-field col s2">
-                                    <input value={ingredient.amount.clone()} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
+                                    <input value={ingredient_amount} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
                                 </div>
                                 <div class="input-field col s2">
-                                    <input value={ingredient.unit.clone()} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
+                                    <input value={ingredient_unit} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
                                 </div>
                                 <div class="input-field col s6">
                                     <input value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>

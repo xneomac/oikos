@@ -38,7 +38,8 @@ pub mod components {
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct RecipeIngredientModel {
             #[serde(rename = "amount")]
-            pub amount: f64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub amount: Option<f64>,
             #[serde(rename = "name")]
             pub name: String,
             #[serde(rename = "notes")]
@@ -51,7 +52,8 @@ pub mod components {
             #[serde(skip_serializing_if = "Option::is_none")]
             pub substitutions: Option<Vec<components::schemas::RecipeIngredientModel>>,
             #[serde(rename = "unit")]
-            pub unit: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub unit: Option<String>,
             #[serde(rename = "usda_num")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub usda_num: Option<String>,

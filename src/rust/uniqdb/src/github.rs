@@ -40,8 +40,18 @@ where
     type Error = GithubDbError;
 
     fn get_all(&self) -> Result<Vec<T>, GithubDbError> {
-        let data = list_organization_repositories(&self.client, &self.organization)?;
-        Ok(data
+        let mut recipe_list = vec![];
+
+        let mut page = 1;
+        let mut data = list_organization_repositories(&self.client, &self.organization, page)?;
+        while data.len() == 100 {
+            recipe_list.append(&mut data);
+            page += 1;
+            data = list_organization_repositories(&self.client, &self.organization, page)?;
+        }
+        recipe_list.append(&mut data);
+
+        let recipes = recipe_list
             .iter()
             .filter_map(|item| match serde_json::from_value(item.clone()) {
                 Ok(item) => Some(item),
@@ -50,7 +60,9 @@ where
                     None
                 }
             })
-            .collect::<Vec<_>>())
+            .collect::<Vec<_>>();
+
+        Ok(recipes)
     }
 
     fn create(&self, id: &str, name: &str, model: &T) -> Result<T, GithubDbError> {
@@ -113,8 +125,12 @@ where
 fn list_organization_repositories(
     client: &Github,
     org: &str,
+    page: u32,
 ) -> Result<Vec<serde_json::Value>, GithubDbError> {
-    let endpoint = format!("orgs/{}/repos", org);
+    let endpoint = format!(
+        "orgs/{}/repos?per_page=100&sort=updated&direction=dsc&page={}",
+        org, page
+    );
     let (_, _, json) = client
         .get()
         .custom_endpoint(&endpoint)

@@ -582,7 +582,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "amount", "name", "unit" ],
+        "required" : [ "name" ],
         "title" : "recipe_ingredient_model",
         "type" : "object"
       },
