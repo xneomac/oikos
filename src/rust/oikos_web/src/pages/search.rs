@@ -1,5 +1,5 @@
 use crate::components::Token;
-use crate::root::AppRoute;
+use crate::root::{AppRoute, DataHandle};
 use crate::services::{Error, RecipeService};
 use oikos_api::components::schemas::RecipeList;
 use yew::{prelude::*, services::fetch::FetchTask};
@@ -8,12 +8,14 @@ use yew_router::{
     prelude::{Route, RouteAgentDispatcher},
     RouterState,
 };
+use yew_state::SharedStateComponent;
+use yewtil::NeqAssign;
 
-pub struct SearchPage<STATE: RouterState = ()> {
+pub struct SearchPageComponent<STATE: RouterState = ()> {
+    handle: DataHandle,
     recipes_service: RecipeService,
     link: ComponentLink<Self>,
     router: RouteAgentDispatcher<STATE>,
-    recipes: Option<RecipeList>,
     recipes_found: Option<RecipeList>,
     search: String,
     task: Option<FetchTask>,
@@ -26,22 +28,22 @@ pub enum Message {
     OnSearchChange(String),
 }
 
-impl<STATE: RouterState> SearchPage<STATE> {
+impl<STATE: RouterState> SearchPageComponent<STATE> {
     fn request(&mut self) {
         self.task = Some(self.recipes_service.get_recipes(self.response.clone()));
     }
 }
 
-impl<STATE: RouterState> Component for SearchPage<STATE> {
+impl<STATE: RouterState> Component for SearchPageComponent<STATE> {
     type Message = Message;
-    type Properties = ();
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    type Properties = DataHandle;
+    fn create(handle: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
+            handle,
             recipes_service: RecipeService::new(),
             response: link.callback(Message::Response),
             link,
             router: RouteAgentDispatcher::new(),
-            recipes: None,
             recipes_found: None,
             task: None,
             search: "".to_string(),
@@ -51,14 +53,16 @@ impl<STATE: RouterState> Component for SearchPage<STATE> {
     fn rendered(&mut self, first_render: bool) {
         if first_render {
             self.request();
+            self.link
+                .send_message(Message::OnSearchChange("".to_string()));
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Message::Response(Ok(recipes)) => {
-                self.recipes = Some(recipes.clone());
-                self.recipes_found = Some(recipes);
+                self.handle
+                    .reduce(move |state| state.recipes = Some(recipes));
                 self.task = None;
             }
             Message::Response(Err(_)) => {
@@ -69,11 +73,16 @@ impl<STATE: RouterState> Component for SearchPage<STATE> {
                 self.router.send(RouteRequest::ChangeRoute(route));
             }
             Message::OnSearchChange(search) => {
-                if let Some(recipes) = self.recipes.as_ref() {
+                if let Some(recipes) = self.handle.state().recipes.as_ref() {
                     self.recipes_found = Some(
                         recipes
                             .iter()
-                            .filter(|recipe| recipe.name.contains(search.as_str()))
+                            .filter(|recipe| {
+                                recipe
+                                    .name
+                                    .to_lowercase()
+                                    .contains(search.to_lowercase().as_str())
+                            })
                             .cloned()
                             .collect::<Vec<_>>(),
                     );
@@ -84,8 +93,8 @@ impl<STATE: RouterState> Component for SearchPage<STATE> {
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
+    fn change(&mut self, handle: Self::Properties) -> ShouldRender {
+        self.handle.neq_assign(handle)
     }
 
     fn view(&self) -> Html {
@@ -147,3 +156,5 @@ impl<STATE: RouterState> Component for SearchPage<STATE> {
         }
     }
 }
+
+pub type SearchPage = SharedStateComponent<SearchPageComponent>;
