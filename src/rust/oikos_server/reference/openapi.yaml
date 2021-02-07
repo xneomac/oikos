@@ -208,5 +208,45 @@ paths:
           application/json:
             schema:
               $ref: ./models/access_token_request.v1.yaml
+  /meal_plans:
+    get:
+      summary: get planning
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/meal_plans.v1.yaml
+      operationId: get_meal_plans
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+    parameters: []
+    put:
+      summary: Update meal plans
+      operationId: update_meal_plans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/meal_plans.v1.yaml
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: ./models/meal_plans.v1.yaml
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
 components:
   securitySchemes: {}

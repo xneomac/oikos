@@ -11,6 +11,10 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), HashSet<&str>>> = Lazy:
         ],
         ("/info", Method::GET) => hashset![
         ],
+        ("/meal_plans", Method::GET) => hashset![
+        ],
+        ("/meal_plans", Method::PUT) => hashset![
+        ],
         ("/recipes", Method::GET) => hashset![
         ],
         ("/recipes", Method::POST) => hashset![

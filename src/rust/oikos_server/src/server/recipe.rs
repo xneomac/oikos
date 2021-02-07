@@ -25,8 +25,6 @@ pub enum RecipeError {
     #[error("invalid data {0}")]
     InvalidDataError(String),
     #[error("github error")]
-    GithubError(#[from] github_rs::errors::Error),
-    #[error("github error")]
     GithubDbError(#[from] GithubDbError),
 }
 

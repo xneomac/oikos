@@ -1,5 +1,5 @@
 pub mod github;
-pub mod mongodb;
+// pub mod mongodb;
 
 use serde::{de::DeserializeOwned, Serialize};
 pub trait UniqDb<T>

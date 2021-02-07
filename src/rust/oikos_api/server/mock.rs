@@ -142,6 +142,152 @@ pub mod get_info {
     }
 }
 
+pub mod get_meal_plans {
+    use crate::models::*;
+    use mockito::Matcher;
+    use serde_json::json;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Arc;
+    pub struct MockBuilder200 {
+        counter: Arc<AtomicUsize>,
+        responses: Vec<String>,
+        url: String,
+    }
+
+    impl MockBuilder200 {
+        #[allow(clippy::new_without_default)]
+        pub fn new(parameters: &get_meal_plans::Parameters) -> Self {
+            let url = "/meal_plans".to_string();
+            Self {
+                counter: Arc::new(AtomicUsize::new(0)),
+                responses: Vec::new(),
+                url,
+            }
+        }
+
+        pub fn with_response(mut self, response_body: get_meal_plans::Response200) -> Self {
+            self.responses.push(json!(response_body).to_string());
+            self
+        }
+
+        pub fn with_responses(
+            mut self,
+            response_body: get_meal_plans::Response200,
+            expect: usize,
+        ) -> Self {
+            self.responses
+                .extend(std::iter::repeat(json!(response_body).to_string()).take(expect));
+            self
+        }
+
+        pub fn build(&self) -> mockito::Mock {
+            let counter = self.counter.clone();
+            let responses = self.responses.clone();
+
+            mockito::mock("GET", Matcher::Exact(self.url.clone()))
+                .match_query(Matcher::Any)
+                .with_status(200)
+                .with_body_from_fn(move |w| {
+                    let c = counter.load(Ordering::Relaxed);
+                    let response = responses.get(c).unwrap();
+                    if c < responses.len() - 1 {
+                        counter.store(c + 1, Ordering::Relaxed);
+                    }
+                    w.write_all((*response).as_bytes())
+                })
+                .with_header("content-type", "application/json")
+                .expect(self.responses.len())
+        }
+
+        pub fn create(&self) -> mockito::Mock {
+            self.build().create()
+        }
+    }
+
+    pub fn mock_200(parameters: &get_meal_plans::Parameters) -> MockBuilder200 {
+        MockBuilder200::new(parameters)
+    }
+}
+pub mod update_meal_plans {
+    use crate::models::*;
+    use mockito::Matcher;
+    use serde_json::json;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Arc;
+    pub struct MockBuilder200 {
+        counter: Arc<AtomicUsize>,
+        responses: Vec<String>,
+        request_body: Option<update_meal_plans::Body>,
+        url: String,
+    }
+
+    impl MockBuilder200 {
+        #[allow(clippy::new_without_default)]
+        pub fn new(
+            parameters: &update_meal_plans::Parameters,
+            body: Option<update_meal_plans::Body>,
+        ) -> Self {
+            let url = "/meal_plans".to_string();
+            Self {
+                counter: Arc::new(AtomicUsize::new(0)),
+                responses: Vec::new(),
+                request_body: body,
+                url,
+            }
+        }
+
+        pub fn with_response(mut self, response_body: update_meal_plans::Response200) -> Self {
+            self.responses.push(json!(response_body).to_string());
+            self
+        }
+
+        pub fn with_responses(
+            mut self,
+            response_body: update_meal_plans::Response200,
+            expect: usize,
+        ) -> Self {
+            self.responses
+                .extend(std::iter::repeat(json!(response_body).to_string()).take(expect));
+            self
+        }
+
+        pub fn build(&self) -> mockito::Mock {
+            let counter = self.counter.clone();
+            let responses = self.responses.clone();
+            let request_body_matcher = match &self.request_body {
+                Some(request_body) => Matcher::Json(json!(request_body)),
+                None => Matcher::Any,
+            };
+
+            mockito::mock("PUT", Matcher::Exact(self.url.clone()))
+                .match_query(Matcher::Any)
+                .match_body(request_body_matcher)
+                .with_status(200)
+                .with_body_from_fn(move |w| {
+                    let c = counter.load(Ordering::Relaxed);
+                    let response = responses.get(c).unwrap();
+                    if c < responses.len() - 1 {
+                        counter.store(c + 1, Ordering::Relaxed);
+                    }
+                    w.write_all((*response).as_bytes())
+                })
+                .with_header("content-type", "application/json")
+                .expect(self.responses.len())
+        }
+
+        pub fn create(&self) -> mockito::Mock {
+            self.build().create()
+        }
+    }
+
+    pub fn mock_200(
+        parameters: &update_meal_plans::Parameters,
+        body: Option<update_meal_plans::Body>,
+    ) -> MockBuilder200 {
+        MockBuilder200::new(parameters, body)
+    }
+}
+
 pub mod get_recipes {
     use crate::models::*;
     use mockito::Matcher;

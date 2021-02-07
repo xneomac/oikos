@@ -1,5 +1,5 @@
 use super::pages::*;
-use oikos_api::components::schemas::RecipeList;
+use oikos_api::components::schemas::{MealPlans, RecipeList};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::{components::RouterAnchor, prelude::*};
@@ -31,6 +31,7 @@ pub type AppAnchor = RouterAnchor<AppRoute>;
 #[derive(Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DataState {
     pub recipes: Option<RecipeList>,
+    pub meal_plans: Option<MealPlans>,
 }
 
 impl Storable for DataState {

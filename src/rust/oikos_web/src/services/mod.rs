@@ -1,4 +1,5 @@
 mod auth_service;
+mod meal_plans_service;
 mod recipe_service;
 
 use lazy_static::lazy_static;
@@ -12,6 +13,7 @@ use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::services::storage::{Area, StorageService};
 
 pub use auth_service::AuthService;
+pub use meal_plans_service::MealPlansService;
 pub use recipe_service::RecipeService;
 
 const TOKEN_KEY: &str = "yew.token";

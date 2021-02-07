@@ -66,9 +66,6 @@ impl<STATE: RouterState> Component for Tabs<STATE> {
                         <li class="tab">
                             <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::Planning))>{"Planning"}</a>
                         </li>
-                        <li class="tab">
-                            <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::ShoppingList))>{"Listes"}</a>
-                        </li>
                     </ul>
                     </div>
                 </nav>
