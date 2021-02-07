@@ -23,6 +23,7 @@ pub struct PlanningPageComponent<STATE: RouterState = ()> {
     recipes_response: Callback<Result<RecipeList, Error>>,
     meal_plans_task: Option<FetchTask>,
     meal_plans_response: Callback<Result<MealPlans, Error>>,
+    link: ComponentLink<Self>,
 }
 
 pub enum Message {
@@ -60,6 +61,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             recipes_response: link.callback(Message::RecipesResponse),
             meal_plans_task: None,
             meal_plans_response: link.callback(Message::MealPlansResponse),
+            link,
         }
     }
 
@@ -120,22 +122,33 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                                     .iter()
                                     .find(|recipe| recipe.id == recipe_meal.id)
                                     .map(|recipe| {
+                                        let recipe_id = recipe.id.clone();
+                                        let onclick = self.link.callback(move |_| {
+                                            let recipe_id = recipe_id.clone();
+                                            Message::ChangeRoute(AppRoute::Recipe(recipe_id))
+                                        });
+
                                         html! {
-                                            <li>{recipe.name.clone()}</li>
+                                            <div class="card horizontal">
+                                                <div class="card-stacked">
+                                                    <div class="card-content">
+                                                        <span class="card-title">{recipe.name.clone()}</span>
+                                                    </div>
+                                                    <div class="card-action">
+                                                        <a onclick=onclick href="#">{"consulter"}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         }
                                     })
                             })
                             .collect::<Html>();
 
                         html! {
-                            <div class="card">
-                                <div class="card-content">
-                                    <span class="card-title">{meal.date.clone()}</span>
-                                    <ul>
-                                        {recipes}
-                                    </ul>
-                                </div>
-                            </div>
+                            <>
+                                <h5>{meal.date.clone()}</h5>
+                                {recipes}
+                            </>
                         }
                     })
                     .collect::<Html>()
