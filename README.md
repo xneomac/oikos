@@ -10,6 +10,12 @@
 - [ ] make it a PWA
 - [ ] package as APK
 
+## Bugs
+
+- [ ] faster response
+- [ ] improve design
+- [ ] bug crash when change value
+
 ## Done
 
 - [x] bring online

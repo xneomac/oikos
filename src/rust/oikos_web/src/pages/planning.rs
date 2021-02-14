@@ -1,6 +1,7 @@
 use crate::components::Tabs;
 use crate::{
     components::Token,
+    date::format_date,
     root::{AppRoute, DataHandle},
     services::{Error, MealPlansService, RecipeService},
 };
@@ -136,6 +137,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                                                     </div>
                                                     <div class="card-action">
                                                         <a onclick=onclick href="#">{"consulter"}</a>
+                                                        <a href="#">{"supprimer"}</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -146,7 +148,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
 
                         html! {
                             <>
-                                <h5>{meal.date.clone()}</h5>
+                                <h5>{format_date(&meal.date)}</h5>
                                 {recipes}
                             </>
                         }

@@ -11,6 +11,7 @@ pub struct RecipePage {
     task: Option<FetchTask>,
     response: Callback<Result<RecipeModel, Error>>,
     props: Props,
+    edit_mode: bool,
 }
 
 pub enum Message {
@@ -32,6 +33,8 @@ pub enum Message {
     OnQuantityAmountChange(String),
     OnQuantityUnitChange(String),
     OnQuantityDelete,
+    OnEditMode,
+    OnCancel,
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -59,6 +62,7 @@ impl Component for RecipePage {
             task: None,
             props,
             link,
+            edit_mode: false,
         }
     }
 
@@ -94,7 +98,7 @@ impl Component for RecipePage {
             Message::OnIngredientAmountChange(index, amount) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        ingredient.amount = Some(amount.parse::<f64>().unwrap());
+                        ingredient.amount = amount.parse::<f64>().map_or_else(|_err| None, Some);
                     }
                 }
             }
@@ -189,7 +193,7 @@ impl Component for RecipePage {
             Message::OnQuantityAmountChange(quantity_amount) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(quantity) = recipe.quantity.as_mut() {
-                        quantity.amount = quantity_amount.parse::<f64>().unwrap();
+                        quantity.amount = quantity_amount.parse::<f64>().unwrap_or(1.0);
                     }
                 }
             }
@@ -204,6 +208,12 @@ impl Component for RecipePage {
                 if let Some(recipe) = self.recipe.as_mut() {
                     recipe.quantity = None
                 }
+            }
+            Message::OnEditMode => {
+                self.edit_mode = true;
+            }
+            Message::OnCancel => {
+                self.edit_mode = false;
             }
         }
         true
@@ -235,6 +245,9 @@ impl Component for RecipePage {
             .link
             .callback(|e: InputData| Message::OnSourceUrlChange(e.value));
 
+        let on_edit_mode_callback = self.link.callback(|_| Message::OnEditMode);
+        let on_cancel_edit_mode_callback = self.link.callback(|_| Message::OnCancel);
+
         match self.recipe.clone() {
             Some(recipe) => {
                 let ingredients = recipe
@@ -256,33 +269,56 @@ impl Component for RecipePage {
                             .callback(move |_| Message::OnIngredientDelete(index));
 
                         let ingredient_amount = if let Some(amount) = ingredient.amount {
-                            amount
-                        } else {
-                            0.0
-                        };
-
-                        let ingredient_unit = if let Some(unit) = &ingredient.unit {
-                            unit.clone()
+                            format!("{} ", amount)
                         } else {
                             "".to_string()
                         };
 
-                        html! {
-                            <div class="row">
+                        let ingredient_unit = if let Some(unit) = &ingredient.unit {
+                            format!("{} ", unit)
+                        } else {
+                            "".to_string()
+                        };
+
+                        let delete_ingredient = if self.edit_mode {
+                            html! {
                                 <div class="input-field col s2">
-                                    <input value={ingredient_amount} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
+                                    <button onclick={on_ingredient_delete_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                        <i class="material-icons left">{"delete"}</i>
+                                    </button>
                                 </div>
-                                <div class="input-field col s2">
-                                    <input value={ingredient_unit} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
+                            }
+                        } else {
+                            html! {}
+                        };
+
+                        if self.edit_mode {
+                            html! {
+                                <div class="row">
+                                    <div class="input-field col s2">
+                                        <input disabled={!self.edit_mode} value={ingredient_amount} oninput={on_ingredient_amount_change_callback} id="quantity" type="text" class="validate"/>
+                                    </div>
+                                    <div class="input-field col s2">
+                                        <input disabled={!self.edit_mode} value={ingredient_unit} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input disabled={!self.edit_mode} value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
+                                    </div>
+                                    {delete_ingredient}
                                 </div>
-                                <div class="input-field col s6">
-                                    <input value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
+                            }
+                        } else {
+                            let value = format!("{}{}{}", ingredient_amount, ingredient_unit, ingredient.name.clone());
+                            html! {
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input disabled={!self.edit_mode} value={value} id="name" type="text" class="validate"/>
+                                    </div>
                                 </div>
-                                <div class="input-field col s2">
-                                    <a onclick={on_ingredient_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
-                                </div>
-                            </div>
+                            }
                         }
+
+
                     })
                     .collect::<Html>();
                 let steps = match recipe
@@ -296,61 +332,172 @@ impl Component for RecipePage {
                                 .link
                                 .callback(move |_| Message::OnStepDelete(index));
 
+                            let delete_step = if self.edit_mode {
+                                html! {
+                                    <div class="input-field col s2">
+                                        <button onclick={on_step_delete_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                            <i class="material-icons left">{"delete"}</i>
+                                        </button>
+                                    </div>
+                                }
+                            } else {
+                                html! {}
+                            };
+
+
                             html! {
                                 <div class="row">
                                     <div class="input-field col s10">
-                                        <textarea oninput={on_step_change_callback} value={step.step.clone()} class="materialize-textarea"></textarea>
+                                        <textarea disabled={!self.edit_mode} oninput={on_step_change_callback} value={step.step.clone()} class="materialize-textarea"></textarea>
                                     </div>
-                                    <div class="input-field col s2">
-                                        <a onclick={on_step_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
-                                    </div>
+                                    {delete_step}
                                 </div>
                             }
                         }).collect::<Html>(),
                         None => html!{}
                     };
 
-                let quantity = match recipe.quantity {
-                    Some(quantity) => html! {
+                let delete_quantity = if self.edit_mode {
+                    html! {
+                        <div class="input-field col s2">
+                            <button onclick={on_quantity_delete_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                <i class="material-icons left">{"delete"}</i>
+                            </button>
+                        </div>
+                    }
+                } else {
+                    html! {}
+                };
+                let quantity = match (recipe.quantity, self.edit_mode) {
+                    (Some(quantity), true) | (Some(quantity), false) => html! {
                         <div class="row">
                             <div class="input-field col s3">
-                                <input oninput={on_quantity_amount_change_callback} value={quantity.amount} type="text" class="validate"/>
+                                <input disabled={!self.edit_mode} oninput={on_quantity_amount_change_callback} value={quantity.amount} type="text" class="validate"/>
                             </div>
                             <div class="input-field col s7">
-                                <input oninput={on_quantity_unit_change_callback} value={quantity.unit} type="text" class="validate"/>
+                                <input disabled={!self.edit_mode} oninput={on_quantity_unit_change_callback} value={quantity.unit} type="text" class="validate"/>
                             </div>
-                            <div class="input-field col s2">
-                                <a onclick={on_quantity_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
-                            </div>
+                            {delete_quantity}
                         </div>
                     },
-                    None => html! {
+                    (None, true) => html! {
                         <div class="row">
                             <div class="input-field col s12">
-                                <a onclick={on_quantity_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"quantité"}</a>
+                                <button onclick={on_quantity_add_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                    {"quantité"}
+                                    <i class="material-icons left">{"add"}</i>
+                                </button>
                             </div>
                         </div>
                     },
+                    (None, false) => html! {},
                 };
 
-                let source_url = match recipe.source_url {
-                    Some(source_url) => html! {
+                let delete_source = if self.edit_mode {
+                    html! {
+                        <div class="input-field col s2">
+                            <button onclick={on_source_url_delete_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                <i class="material-icons left">{"delete"}</i>
+                            </button>
+                        </div>
+                    }
+                } else {
+                    html! {}
+                };
+                let source_url = match (recipe.source_url, self.edit_mode) {
+                    (Some(source_url), true) | (Some(source_url), false) => html! {
                         <div class="row">
                             <div class="input-field col s10">
-                                <input oninput={on_source_url_change_callback} value={source_url} type="text" class="validate"/>
+                                <input disabled={!self.edit_mode} oninput={on_source_url_change_callback} value={source_url} type="text" class="validate"/>
                             </div>
-                            <div class="input-field col s2">
-                                <a onclick={on_source_url_delete_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"delete"}</i></a>
-                            </div>
+                            {delete_source}
                         </div>
                     },
-                    None => html! {
+                    (None, true) => html! {
                         <div class="row">
                             <div class="input-field col s12">
-                                <a onclick={on_source_url_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"source"}</a>
+                                <button onclick={on_source_url_add_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                    {"source"}
+                                    <i class="material-icons left">{"add"}</i>
+                                </button>
                             </div>
                         </div>
                     },
+                    (None, false) => html! {},
+                };
+
+                let add_ingredient = if self.edit_mode {
+                    html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <button onclick={on_ingredient_add_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                    {"ingrédient"}
+                                    <i class="material-icons left">{"add"}</i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                } else {
+                    html! {}
+                };
+
+                let add_step = if self.edit_mode {
+                    html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <button onclick={on_step_add_callback} class="btn waves-effect waves-light" type="submit" name="action">
+                                    {"instruction"}
+                                    <i class="material-icons left">{"add"}</i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                } else {
+                    html! {}
+                };
+
+                let fab_action = if self.edit_mode {
+                    html! {
+                        <a class="btn-floating btn-large red" onclick=on_cancel_edit_mode_callback>
+                            <i class="large material-icons">{"close"}</i>
+                        </a>
+                    }
+                } else {
+                    html! {
+                        <a class="btn-floating btn-large red" onclick=on_edit_mode_callback>
+                            <i class="large material-icons">{"edit"}</i>
+                        </a>
+                    }
+                };
+
+                let menu_action = if self.edit_mode {
+                    html! {
+                        <li>
+                            <a onclick={on_save}><i class="material-icons">{"save"}</i></a>
+                        </li>
+                    }
+                } else {
+                    html! {}
+                };
+
+                let recipe_name_edit = if self.edit_mode {
+                    html! {
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input disabled={!self.edit_mode} value={recipe.name.clone()} oninput={on_name_change_callback} type="text" class="validate"/>
+                            </div>
+                        </div>
+                    }
+                } else {
+                    html! {}
+                };
+
+                let recipe_name = if self.edit_mode {
+                    html! {}
+                } else {
+                    html! {
+                        <h4>{recipe.name}</h4>
+                    }
                 };
 
                 html! {
@@ -366,21 +513,22 @@ impl Component for RecipePage {
                                     </ul>
 
                                     <ul class="right">
-                                        <li><a onclick={on_save}><i class="material-icons">{"save"}</i></a></li>
+                                        {menu_action}
                                     </ul>
                                 </div>
                             </nav>
                         </div>
 
+                        <div class="fixed-action-btn">
+                            {fab_action}
+                        </div>
+
                         <div class="container">
                             <div class="section">
                                 <div class="row">
+                                    {recipe_name}
                                     <form class="col s12">
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input value={recipe.name} oninput={on_name_change_callback} type="text" class="validate"/>
-                                            </div>
-                                        </div>
+                                        {recipe_name_edit}
                                         {quantity}
                                     </form>
                                 </div>
@@ -391,11 +539,7 @@ impl Component for RecipePage {
                                 <div class="row">
                                     <form class="col s12">
                                         {ingredients}
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <a onclick={on_ingredient_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"ingrédient"}</a>
-                                            </div>
-                                        </div>
+                                        {add_ingredient}
                                     </form>
                                 </div>
                             </div>
@@ -405,11 +549,7 @@ impl Component for RecipePage {
                                 <div class="row">
                                     <form class="col s12">
                                         {steps}
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <a onclick={on_step_add_callback} class="waves-effect waves-teal btn-flat"><i class="material-icons">{"add"}</i>{"instruction"}</a>
-                                            </div>
-                                        </div>
+                                        {add_step}
                                     </form>
                                 </div>
                             </div>

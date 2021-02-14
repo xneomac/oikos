@@ -1,8 +1,12 @@
 use crate::components::Tabs;
 use crate::components::Token;
 use crate::root::{AppRoute, DataHandle};
-use crate::services::{Error, RecipeService};
+use crate::{
+    date::next_seven_days,
+    services::{Error, RecipeService},
+};
 use oikos_api::components::schemas::*;
+use wasm_bindgen::prelude::*;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -24,6 +28,7 @@ pub struct RecipeListPageComponent<STATE: RouterState = ()> {
 pub enum Message {
     Response(Result<RecipeList, Error>),
     ChangeRoute(AppRoute),
+    OpenModal,
 }
 
 impl<STATE: RouterState> RecipeListPageComponent<STATE> {
@@ -66,6 +71,7 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                 let route = Route::from(route);
                 self.router.send(RouteRequest::ChangeRoute(route));
             }
+            Message::OpenModal => unsafe { open_modal() },
         }
         true
     }
@@ -93,14 +99,19 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                             let recipe_id = recipe_id.clone();
                             Message::ChangeRoute(AppRoute::Recipe(recipe_id))
                         });
+                        let on_planning_callback = self
+                            .link
+                            .callback(move |_| Message::OpenModal);
 
                         html! {
-                            <li class="waves-effect" onclick=onclick>
+                            <li class="waves-effect">
                                 <div class="valign-wrapper">
-                                    <div class="title">
-                                        { recipe.name.clone() }
+                                    <div class="list-elem" onclick=onclick>
+                                        <div class="title" >
+                                            { recipe.name.clone() }
+                                        </div>
                                     </div>
-                                    <i class="material-icons ml-auto">{"info"}</i>
+                                    <i onclick=on_planning_callback class="material-icons ml-auto">{"event"}</i>
                                 </div>
                             </li>
                         }
@@ -108,6 +119,17 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                     .collect::<Html>()
             })
             .unwrap_or_else(|| html! { <></> });
+
+        let next_date = next_seven_days()
+            .iter()
+            .map(|(_day_code, day_string)| {
+                html! {
+                    <li class="waves-effect">
+                        <div class="valign-wrapper">{day_string}</div>
+                    </li>
+                }
+            })
+            .collect::<Html>();
 
         html! {
             <>
@@ -121,9 +143,28 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                         <i class="large material-icons">{"add"}</i>
                     </a>
                 </div>
+                <div id="modal1" class="modal bottom-sheet">
+                    <div class="modal-content">
+                        <ul class="list">
+                            {next_date}
+                        </ul>
+                    </div>
+                </div>
             </>
         }
     }
 }
 
 pub type RecipeListPage = SharedStateComponent<RecipeListPageComponent>;
+
+#[wasm_bindgen(inline_js = "
+
+        export function open_modal() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+            var instance = M.Modal.getInstance(elems[0]);
+            instance.open();
+        }")]
+extern "C" {
+    fn open_modal();
+}
