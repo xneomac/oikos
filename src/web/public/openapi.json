@@ -618,9 +618,12 @@
                   },
                   "servings" : {
                     "type" : "number"
+                  },
+                  "done" : {
+                    "type" : "boolean"
                   }
                 },
-                "required" : [ "id" ],
+                "required" : [ "done", "id" ],
                 "type" : "object"
               },
               "type" : "array"

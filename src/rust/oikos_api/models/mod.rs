@@ -34,6 +34,8 @@ pub mod components {
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct MealPlansItemRecipesItem {
+            #[serde(rename = "done")]
+            pub done: bool,
             #[serde(rename = "id")]
             pub id: String,
             #[serde(rename = "servings")]

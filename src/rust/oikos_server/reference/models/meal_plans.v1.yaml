@@ -14,8 +14,11 @@ items:
             type: string
           servings:
             type: number
+          done:
+            type: boolean
         required:
           - id
+          - done
   required:
     - date
     - recipes

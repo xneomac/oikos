@@ -31,6 +31,8 @@ pub enum Message {
     ChangeRoute(AppRoute),
     RecipesResponse(Result<RecipeList, Error>),
     MealPlansResponse(Result<MealPlans, Error>),
+    CheckRecipe(String),
+    DeleteRecipe(String),
 }
 
 impl<STATE: RouterState> PlanningPageComponent<STATE> {
@@ -95,6 +97,8 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                 let route = Route::from(route);
                 self.router.send(RouteRequest::ChangeRoute(route));
             }
+            Message::CheckRecipe(recipe_id) => {}
+            Message::DeleteRecipe(recipe_id) => {}
         }
         true
     }
@@ -115,18 +119,31 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                 meal_plans
                     .iter()
                     .map(|meal| {
+                        let mut recipes_counter = 0;
                         let recipes = meal
                             .recipes
                             .iter()
+                            .filter(|recipe_meal| !recipe_meal.done)
                             .filter_map(|recipe_meal| {
                                 recipes
                                     .iter()
                                     .find(|recipe| recipe.id == recipe_meal.id)
                                     .map(|recipe| {
+                                        recipes_counter += 1;
                                         let recipe_id = recipe.id.clone();
-                                        let onclick = self.link.callback(move |_| {
+                                        let on_read_callback = self.link.callback(move |_| {
                                             let recipe_id = recipe_id.clone();
                                             Message::ChangeRoute(AppRoute::Recipe(recipe_id))
+                                        });
+                                        let recipe_id = recipe.id.clone();
+                                        let on_delete_callback = self.link.callback(move |_| {
+                                            let recipe_id = recipe_id.clone();
+                                            Message::CheckRecipe(recipe_id)
+                                        });
+                                        let recipe_id = recipe.id.clone();
+                                        let on_check_callback = self.link.callback(move |_| {
+                                            let recipe_id = recipe_id.clone();
+                                            Message::DeleteRecipe(recipe_id)
                                         });
 
                                         html! {
@@ -136,8 +153,9 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                                                         <span class="card-title">{recipe.name.clone()}</span>
                                                     </div>
                                                     <div class="card-action">
-                                                        <a onclick=onclick href="#">{"consulter"}</a>
-                                                        <a href="#">{"supprimer"}</a>
+                                                        <a onclick=on_read_callback href="#">{"consulter"}</a>
+                                                        <a onclick=on_delete_callback href="#">{"supprimer"}</a>
+                                                        <a onclick=on_check_callback href="#">{"valider"}</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -146,12 +164,17 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                             })
                             .collect::<Html>();
 
-                        html! {
-                            <>
-                                <h5>{format_date(&meal.date)}</h5>
-                                {recipes}
-                            </>
+                        if recipes_counter > 0 {
+                            html! {
+                                <>
+                                    <h5>{format_date(&meal.date)}</h5>
+                                    {recipes}
+                                </>
+                            }
+                        } else {
+                            html! {}
                         }
+
                     })
                     .collect::<Html>()
             })
