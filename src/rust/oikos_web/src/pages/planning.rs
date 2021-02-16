@@ -5,7 +5,7 @@ use crate::{
     root::{AppRoute, DataHandle},
     services::{Error, MealPlansService, RecipeService},
 };
-use oikos_api::components::schemas::{MealPlans, RecipeList, RecipeListItem, RecipeModel};
+use oikos_api::components::schemas::{MealPlans, RecipeList, RecipeListItem};
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -25,6 +25,7 @@ pub struct PlanningPageComponent<STATE: RouterState = ()> {
     meal_plans_task: Option<FetchTask>,
     meal_plans_response: Callback<Result<MealPlans, Error>>,
     link: ComponentLink<Self>,
+    show_done_recipes: bool,
 }
 
 pub enum Message {
@@ -33,6 +34,7 @@ pub enum Message {
     MealPlansResponse(Result<MealPlans, Error>),
     CheckRecipe(String, String),
     DeleteRecipe(String, String),
+    ShowDoneRecipes(bool),
 }
 
 impl<STATE: RouterState> PlanningPageComponent<STATE> {
@@ -82,6 +84,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             meal_plans_task: None,
             meal_plans_response: link.callback(Message::MealPlansResponse),
             link,
+            show_done_recipes: false,
         }
     }
 
@@ -158,6 +161,9 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                     state.meal_plans = meal_plans;
                 });
             }
+            Message::ShowDoneRecipes(value) => {
+                self.show_done_recipes = value;
+            }
         }
         true
     }
@@ -194,7 +200,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                             Message::CheckRecipe(meal_date.clone(), recipe_id)
                         });
 
-                        if !meal_recipe.done {
+                        if !meal_recipe.done || self.show_done_recipes {
                             recipes_counter += 1;
                             html_recipes.push(html! {
                                 <div class="card horizontal">
@@ -226,6 +232,18 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             }
         };
 
+        let expand = if self.show_done_recipes {
+            let callback = self.link.callback(move |_| Message::ShowDoneRecipes(false));
+            html! {
+                <a onclick=callback href="#">{"hide done recipes"}</a>
+            }
+        } else {
+            let callback = self.link.callback(move |_| Message::ShowDoneRecipes(true));
+            html! {
+                <a onclick=callback href="#">{"show done recipes"}</a>
+            }
+        };
+
         html! {
             <>
                 <Token/>
@@ -234,6 +252,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                     <div class="row">
                         <div class="col s12 m6">
                             {html_view}
+                            {expand}
                         </div>
                     </div>
                 </div>
