@@ -100,7 +100,7 @@ where
         if let Some(sha) = json.get("sha") {
             create_or_update_file_content(
                 &self.client,
-                "open-cooking",
+                &self.organization,
                 &id,
                 "uniq.json",
                 &serde_json::json!({

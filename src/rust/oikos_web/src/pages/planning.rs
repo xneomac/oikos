@@ -5,7 +5,7 @@ use crate::{
     root::{AppRoute, DataHandle},
     services::{Error, MealPlansService, RecipeService},
 };
-use oikos_api::components::schemas::{MealPlans, RecipeList};
+use oikos_api::components::schemas::{MealPlans, RecipeList, RecipeListItem, RecipeModel};
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -31,8 +31,8 @@ pub enum Message {
     ChangeRoute(AppRoute),
     RecipesResponse(Result<RecipeList, Error>),
     MealPlansResponse(Result<MealPlans, Error>),
-    CheckRecipe(String),
-    DeleteRecipe(String),
+    CheckRecipe(String, String),
+    DeleteRecipe(String, String),
 }
 
 impl<STATE: RouterState> PlanningPageComponent<STATE> {
@@ -48,6 +48,23 @@ impl<STATE: RouterState> PlanningPageComponent<STATE> {
             self.meal_plans_service
                 .get_meal_plans(self.meal_plans_response.clone()),
         );
+    }
+
+    fn update_meal_plans(&mut self, meal_plans: Option<MealPlans>) {
+        if let Some(meal_plans) = meal_plans {
+            self.meal_plans_task = Some(
+                self.meal_plans_service
+                    .update_meal_plans(meal_plans, self.meal_plans_response.clone()),
+            );
+        }
+    }
+
+    fn get_recipe(&self, recipe_id: String) -> Option<RecipeListItem> {
+        let recipes = self.handle.state().recipes.clone().unwrap_or_else(Vec::new);
+        recipes
+            .iter()
+            .find(|recipe| recipe.id == recipe_id)
+            .cloned()
     }
 }
 
@@ -97,8 +114,50 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                 let route = Route::from(route);
                 self.router.send(RouteRequest::ChangeRoute(route));
             }
-            Message::CheckRecipe(recipe_id) => {}
-            Message::DeleteRecipe(recipe_id) => {}
+            Message::CheckRecipe(meal_date, recipe_id) => {
+                let mut meal_plans = self.handle.state().meal_plans.clone();
+                if let Some(meals_plans_option) = meal_plans.as_mut() {
+                    if let Some(meal) = meals_plans_option
+                        .iter_mut()
+                        .find(|meals| meals.date == meal_date)
+                    {
+                        if let Some(position) = meal
+                            .recipes
+                            .iter()
+                            .position(|recipe| recipe.id == recipe_id)
+                        {
+                            if let Some(recipe) = meal.recipes.get_mut(position) {
+                                recipe.done = true;
+                            }
+                        }
+                    }
+                }
+                self.update_meal_plans(meal_plans.clone());
+                self.handle.reduce(move |state| {
+                    state.meal_plans = meal_plans;
+                });
+            }
+            Message::DeleteRecipe(meal_date, recipe_id) => {
+                let mut meal_plans = self.handle.state().meal_plans.clone();
+                if let Some(meals_plans_option) = meal_plans.as_mut() {
+                    if let Some(meal) = meals_plans_option
+                        .iter_mut()
+                        .find(|meals| meals.date == meal_date)
+                    {
+                        if let Some(position) = meal
+                            .recipes
+                            .iter()
+                            .position(|recipe| recipe.id == recipe_id)
+                        {
+                            meal.recipes.remove(position);
+                        }
+                    }
+                }
+                self.update_meal_plans(meal_plans.clone());
+                self.handle.reduce(move |state| {
+                    state.meal_plans = meal_plans;
+                });
+            }
         }
         true
     }
@@ -108,77 +167,64 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
     }
 
     fn view(&self) -> Html {
-        let recipes = self.handle.state().recipes.clone().unwrap_or_else(Vec::new);
+        let meal_plans: Option<MealPlans> = self.handle.state().meal_plans.clone();
+        let mut html_view = vec![];
 
-        let meal_list = self
-            .handle
-            .state()
-            .meal_plans
-            .clone()
-            .map(|meal_plans| {
-                meal_plans
-                    .iter()
-                    .map(|meal| {
-                        let mut recipes_counter = 0;
-                        let recipes = meal
-                            .recipes
-                            .iter()
-                            .filter(|recipe_meal| !recipe_meal.done)
-                            .filter_map(|recipe_meal| {
-                                recipes
-                                    .iter()
-                                    .find(|recipe| recipe.id == recipe_meal.id)
-                                    .map(|recipe| {
-                                        recipes_counter += 1;
-                                        let recipe_id = recipe.id.clone();
-                                        let on_read_callback = self.link.callback(move |_| {
-                                            let recipe_id = recipe_id.clone();
-                                            Message::ChangeRoute(AppRoute::Recipe(recipe_id))
-                                        });
-                                        let recipe_id = recipe.id.clone();
-                                        let on_delete_callback = self.link.callback(move |_| {
-                                            let recipe_id = recipe_id.clone();
-                                            Message::CheckRecipe(recipe_id)
-                                        });
-                                        let recipe_id = recipe.id.clone();
-                                        let on_check_callback = self.link.callback(move |_| {
-                                            let recipe_id = recipe_id.clone();
-                                            Message::DeleteRecipe(recipe_id)
-                                        });
+        if let Some(meal_plans) = meal_plans {
+            for meal in meal_plans {
+                let mut recipes_counter = 0;
+                let mut html_recipes = vec![];
+                for meal_recipe in &meal.recipes {
+                    if let Some(recipe) = self.get_recipe(meal_recipe.id.clone()) {
+                        let recipe_id = recipe.id.clone();
+                        let on_read_callback = self.link.callback(move |_| {
+                            let recipe_id = recipe_id.clone();
+                            Message::ChangeRoute(AppRoute::Recipe(recipe_id))
+                        });
+                        let recipe_id = recipe.id.clone();
+                        let meal_date = meal.date.clone();
+                        let on_delete_callback = self.link.callback(move |_| {
+                            let recipe_id = recipe_id.clone();
+                            Message::DeleteRecipe(meal_date.clone(), recipe_id)
+                        });
+                        let recipe_id = recipe.id.clone();
+                        let meal_date = meal.date.clone();
+                        let on_check_callback = self.link.callback(move |_| {
+                            let recipe_id = recipe_id.clone();
+                            Message::CheckRecipe(meal_date.clone(), recipe_id)
+                        });
 
-                                        html! {
-                                            <div class="card horizontal">
-                                                <div class="card-stacked">
-                                                    <div class="card-content">
-                                                        <span class="card-title">{recipe.name.clone()}</span>
-                                                    </div>
-                                                    <div class="card-action">
-                                                        <a onclick=on_read_callback href="#">{"consulter"}</a>
-                                                        <a onclick=on_delete_callback href="#">{"supprimer"}</a>
-                                                        <a onclick=on_check_callback href="#">{"valider"}</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    })
+                        if !meal_recipe.done {
+                            recipes_counter += 1;
+                            html_recipes.push(html! {
+                                <div class="card horizontal">
+                                    <div class="card-stacked">
+                                        <div class="card-content">
+                                            <span class="card-title">{recipe.name.clone()}</span>
+                                        </div>
+                                        <div class="card-action">
+                                            <a onclick=on_read_callback href="#">{"consulter"}</a>
+                                            <a onclick=on_delete_callback href="#">{"supprimer"}</a>
+                                            <a onclick=on_check_callback href="#">{"valider"}</a>
+                                        </div>
+                                    </div>
+                                </div>
                             })
-                            .collect::<Html>();
-
-                        if recipes_counter > 0 {
-                            html! {
-                                <>
-                                    <h5>{format_date(&meal.date)}</h5>
-                                    {recipes}
-                                </>
-                            }
-                        } else {
-                            html! {}
                         }
+                    }
+                }
 
+                if recipes_counter > 0 {
+                    let meal_date = meal.clone().date;
+                    html_view.push(html! {
+                        <>
+                            <h5>{format_date(&meal_date)}</h5>
+                            {html_recipes}
+                        </>
                     })
-                    .collect::<Html>()
-            })
-            .unwrap_or_else(|| html! { <></> });
+                }
+            }
+        };
 
         html! {
             <>
@@ -187,7 +233,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                 <div class="container">
                     <div class="row">
                         <div class="col s12 m6">
-                            {meal_list}
+                            {html_view}
                         </div>
                     </div>
                 </div>
