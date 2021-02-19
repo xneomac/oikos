@@ -2,7 +2,7 @@
 
 ## Todo
 
-- [ ] planning
+- [ ] Icons instead of just name
 - [ ] shopping list
 - [ ] loading screen
 - [ ] handling bad data / missing name for recipe
@@ -18,6 +18,7 @@
 
 ## Done
 
+- [x] planning
 - [x] bring online
 - [x] servings
 - [x] auth
