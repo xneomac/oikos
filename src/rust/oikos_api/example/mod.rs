@@ -2,9 +2,9 @@ pub mod components {
     pub mod schemas {
         use crate::components;
         use crate::components::schemas::{
-            AccessToken, AccessTokenRequest, Forbidden, Info, Notfound, RecipeIngredientModel,
-            RecipeList, RecipeModel, RecipeModelHaccp, RecipeModelOvenTemp, RecipeModelQuantity,
-            RecipeModelSourceBook, RecipeModelSteps, TempUnit, Unauthorized,
+            AccessToken, AccessTokenRequest, Forbidden, Info, MealPlans, Notfound,
+            RecipeIngredientModel, RecipeList, RecipeModel, RecipeModelHaccp, RecipeModelOvenTemp,
+            RecipeModelQuantity, RecipeModelSourceBook, RecipeModelSteps, TempUnit, Unauthorized,
         };
         use serde_json::json;
 
@@ -44,6 +44,13 @@ pub mod components {
         impl InfoExample {
             pub fn default() -> Option<Info> {
                 Some(serde_json::from_str(INFO).unwrap())
+            }
+        }
+
+        pub struct MealPlansExample;
+        impl MealPlansExample {
+            pub fn default() -> Option<MealPlans> {
+                None
             }
         }
 

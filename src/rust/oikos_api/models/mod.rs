@@ -32,6 +32,27 @@ pub mod components {
             pub version: Option<String>,
         }
 
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct MealPlansItemRecipesItem {
+            #[serde(rename = "done")]
+            pub done: bool,
+            #[serde(rename = "id")]
+            pub id: String,
+            #[serde(rename = "servings")]
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub servings: Option<f64>,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct MealPlansItem {
+            #[serde(rename = "date")]
+            pub date: String,
+            #[serde(rename = "recipes")]
+            pub recipes: Vec<MealPlansItemRecipesItem>,
+        }
+
+        pub type MealPlans = Vec<MealPlansItem>;
+
         /// Not Found
         pub type Notfound = String;
 
@@ -299,6 +320,184 @@ pub mod get_info {
 
     /// OK
     pub type Status200 = components::schemas::Info;
+}
+
+pub mod get_meal_plans {
+    use super::components;
+    #[cfg(feature = "server")]
+    use actix_web::error::ErrorBadRequest;
+    #[cfg(feature = "server")]
+    use actix_web::{dev, FromRequest, HttpRequest};
+    #[cfg(feature = "server")]
+    use futures::future::{err, ok, Ready};
+    use serde::{Deserialize, Serialize};
+
+    /// Parameters for get_meal_plans operation
+    #[derive(Deserialize, Debug)]
+    pub struct Parameters {
+        pub authorization: String,
+    }
+
+    impl Parameters {
+        pub fn new(header: Header) -> Self {
+            Self {
+                authorization: header.authorization,
+            }
+        }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
+    }
+    /// Header parameters for get_meal_plans operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    #[cfg(feature = "server")]
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
+        }
+    }
+
+    #[derive(Debug)]
+    pub enum Response<T> {
+        Response200(Response200),
+        Unspecified(T),
+    }
+
+    /// OK
+    pub type Response200 = components::schemas::MealPlans;
+
+    #[derive(Debug)]
+    pub enum Success {
+        Status200(Status200),
+    }
+
+    #[derive(Debug)]
+    pub enum Error<T: std::fmt::Debug> {
+        Unknown(T),
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::fmt::Display for Error<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::Unknown(response) => write!(f, "Unspecified response: `{}`", response),
+            }
+        }
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::error::Error for Error<T> {}
+
+    /// OK
+    pub type Status200 = components::schemas::MealPlans;
+}
+
+pub mod update_meal_plans {
+    use super::components;
+    #[cfg(feature = "server")]
+    use actix_web::error::ErrorBadRequest;
+    #[cfg(feature = "server")]
+    use actix_web::{dev, FromRequest, HttpRequest};
+    #[cfg(feature = "server")]
+    use futures::future::{err, ok, Ready};
+    use serde::{Deserialize, Serialize};
+
+    /// Parameters for update_meal_plans operation
+    #[derive(Deserialize, Debug)]
+    pub struct Parameters {
+        pub authorization: String,
+    }
+
+    impl Parameters {
+        pub fn new(header: Header) -> Self {
+            Self {
+                authorization: header.authorization,
+            }
+        }
+
+        pub fn header(&self) -> Header {
+            Header {
+                authorization: self.authorization.clone(),
+            }
+        }
+    }
+    /// Header parameters for update_meal_plans operation
+    #[derive(Deserialize, Serialize)]
+    pub struct Header {
+        pub authorization: String,
+    }
+
+    #[cfg(feature = "server")]
+    impl FromRequest for Header {
+        type Error = actix_web::Error;
+        type Future = Ready<Result<Self, Self::Error>>;
+        type Config = ();
+
+        fn from_request(req: &HttpRequest, _: &mut dev::Payload) -> Self::Future {
+            let headers = req.headers();
+            ok(Self {
+                authorization: match headers.get("authorization") {
+                    Some(value) => match value.to_str() {
+                        Ok(value) => value.to_string(),
+                        Err(_) => return err(ErrorBadRequest("authorization should be a string")),
+                    },
+                    None => return err(ErrorBadRequest("missing authorization in header")),
+                },
+            })
+        }
+    }
+
+    pub type Body = components::schemas::MealPlans;
+
+    #[derive(Debug)]
+    pub enum Response<T> {
+        Response200(Response200),
+        Unspecified(T),
+    }
+
+    /// OK
+    pub type Response200 = components::schemas::MealPlans;
+
+    #[derive(Debug)]
+    pub enum Success {
+        Status200(Status200),
+    }
+
+    #[derive(Debug)]
+    pub enum Error<T: std::fmt::Debug> {
+        Unknown(T),
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::fmt::Display for Error<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::Unknown(response) => write!(f, "Unspecified response: `{}`", response),
+            }
+        }
+    }
+
+    impl<T: std::fmt::Debug + std::fmt::Display> std::error::Error for Error<T> {}
+
+    /// OK
+    pub type Status200 = components::schemas::MealPlans;
 }
 
 pub mod get_recipes {

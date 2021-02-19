@@ -31,6 +31,21 @@ pub trait OikosApi {
         unimplemented!()
     }
 
+    async fn get_meal_plans(
+        &self,
+        _parameters: get_meal_plans::Parameters,
+    ) -> Result<get_meal_plans::Success, get_meal_plans::Error<Self::Error>> {
+        unimplemented!()
+    }
+
+    async fn update_meal_plans(
+        &self,
+        _parameters: update_meal_plans::Parameters,
+        _body: update_meal_plans::Body,
+    ) -> Result<update_meal_plans::Success, update_meal_plans::Error<Self::Error>> {
+        unimplemented!()
+    }
+
     async fn get_recipes(
         &self,
         _parameters: get_recipes::Parameters,
@@ -106,6 +121,38 @@ async fn get_info<Server: OikosApi>(server: Data<Server>) -> impl Responder {
     let parameters = Parameters::new();
 
     match server.get_info(parameters).await {
+        Ok(Success::Status200(response)) => {
+            HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response)
+        }
+        Err(Error::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
+    }
+}
+/// get planning
+async fn get_meal_plans<Server: OikosApi>(
+    server: Data<Server>,
+    header: get_meal_plans::Header,
+) -> impl Responder {
+    use get_meal_plans::*;
+    let parameters = Parameters::new(header);
+
+    match server.get_meal_plans(parameters).await {
+        Ok(Success::Status200(response)) => {
+            HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response)
+        }
+        Err(Error::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
+    }
+}
+/// Update meal plans
+async fn update_meal_plans<Server: OikosApi>(
+    server: Data<Server>,
+    header: update_meal_plans::Header,
+    body: Json<update_meal_plans::Body>,
+) -> impl Responder {
+    use update_meal_plans::*;
+    let parameters = Parameters::new(header);
+    let body = body.into_inner();
+
+    match server.update_meal_plans(parameters, body).await {
         Ok(Success::Status200(response)) => {
             HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response)
         }
@@ -232,6 +279,11 @@ async fn delete_recipe_by_id<Server: OikosApi>(
 pub fn config<Server: OikosApi + Send + Sync + Clone + 'static>(app: &mut ServiceConfig) {
     app.service(resource("/access_token").route(post().to(get_oauth_access_token::<Server>)))
         .service(resource("/info").route(get().to(get_info::<Server>)))
+        .service(
+            resource("/meal_plans")
+                .route(get().to(get_meal_plans::<Server>))
+                .route(put().to(update_meal_plans::<Server>)),
+        )
         .service(
             resource("/recipes")
                 .route(get().to(get_recipes::<Server>))

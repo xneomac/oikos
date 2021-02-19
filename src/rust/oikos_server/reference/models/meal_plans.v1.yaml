@@ -1,0 +1,24 @@
+title: meal_plans
+type: array
+items:
+  type: object
+  properties:
+    date:
+      type: string
+    recipes:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          servings:
+            type: number
+          done:
+            type: boolean
+        required:
+          - id
+          - done
+  required:
+    - date
+    - recipes

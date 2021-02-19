@@ -1,6 +1,7 @@
 #![allow(clippy::let_unit_value)]
 
 mod auth;
+mod meal_plan;
 mod recipe;
 
 use async_trait::async_trait;
@@ -12,6 +13,8 @@ pub enum ServerError {
     RecipeError(#[from] recipe::RecipeError),
     #[error("auth error")]
     AuthError(#[from] auth::AuthError),
+    #[error("meal plans error")]
+    MealPlanError(#[from] meal_plan::MealPlanError),
 }
 
 #[derive(Clone)]
@@ -118,6 +121,29 @@ impl OikosApi for Server {
         use get_oauth_access_token::*;
         match self.get_oauth_access_token(&code).await {
             Ok(access_token) => Ok(Success::Status200(access_token)),
+            Err(err) => Err(Error::Unknown(err.into())),
+        }
+    }
+
+    async fn get_meal_plans(
+        &self,
+        get_meal_plans::Parameters { authorization }: get_meal_plans::Parameters,
+    ) -> Result<get_meal_plans::Success, get_meal_plans::Error<Self::Error>> {
+        use get_meal_plans::*;
+        match self.get_meal_plans(&authorization).await {
+            Ok(meal_plans) => Ok(Success::Status200(meal_plans)),
+            Err(err) => Err(Error::Unknown(err.into())),
+        }
+    }
+
+    async fn update_meal_plans(
+        &self,
+        update_meal_plans::Parameters { authorization }: update_meal_plans::Parameters,
+        meal_plans: update_meal_plans::Body,
+    ) -> Result<update_meal_plans::Success, update_meal_plans::Error<Self::Error>> {
+        use update_meal_plans::*;
+        match self.update_meal_plans(meal_plans, &authorization).await {
+            Ok(meal_plans) => Ok(Success::Status200(meal_plans)),
             Err(err) => Err(Error::Unknown(err.into())),
         }
     }

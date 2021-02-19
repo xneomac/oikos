@@ -353,6 +353,70 @@
         },
         "summary" : "Get oauth access token"
       }
+    },
+    "/meal_plans" : {
+      "get" : {
+        "operationId" : "get_meal_plans",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/meal_plans"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "get planning",
+        "tags" : [ ]
+      },
+      "put" : {
+        "operationId" : "update_meal_plans",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/meal_plans"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/meal_plans"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Update meal plans"
+      }
     }
   },
   "components" : {
@@ -539,6 +603,37 @@
         "required" : [ "access_token", "scope", "token_type" ],
         "title" : "access_token",
         "type" : "object"
+      },
+      "meal_plans" : {
+        "items" : {
+          "properties" : {
+            "date" : {
+              "type" : "string"
+            },
+            "recipes" : {
+              "items" : {
+                "properties" : {
+                  "id" : {
+                    "type" : "string"
+                  },
+                  "servings" : {
+                    "type" : "number"
+                  },
+                  "done" : {
+                    "type" : "boolean"
+                  }
+                },
+                "required" : [ "done", "id" ],
+                "type" : "object"
+              },
+              "type" : "array"
+            }
+          },
+          "required" : [ "date", "recipes" ],
+          "type" : "object"
+        },
+        "title" : "meal_plans",
+        "type" : "array"
       },
       "recipe_ingredient_model" : {
         "example" : {

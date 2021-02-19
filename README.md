@@ -2,18 +2,23 @@
 
 ## Todo
 
-- [ ] import OpenRecipe
-- [ ] planning
+- [ ] Icons instead of just name
 - [ ] shopping list
 - [ ] loading screen
 - [ ] handling bad data / missing name for recipe
 - [ ] show number of recipes
-- [ ] load recipe 50 by 50
 - [ ] make it a PWA
 - [ ] package as APK
 
+## Bugs
+
+- [ ] faster response
+- [ ] improve design
+- [ ] bug crash when change value
+
 ## Done
 
+- [x] planning
 - [x] bring online
 - [x] servings
 - [x] auth
