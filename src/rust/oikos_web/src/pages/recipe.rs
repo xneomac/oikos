@@ -100,9 +100,43 @@ impl RecipePageComponent {
             .collect::<Html>();
 
         html! {
-            <ul>
-                {ingredients}
-            </ul>
+            <>
+                <div class="ingredients">
+                    <div class="z-depth-1 ingredient vegetable">
+                        <img class="fit-picture"
+                            src="/icons/icons8-carotte-96.png"/>
+                        <p>{"400 g carrote"}</p>
+                    </div>
+                    <div class="z-depth-1 ingredient vegetable">
+                        <img class="fit-picture"
+                            src="/icons/icons8-paprika-96.png"/>
+                        <p>{"400 g poivron"}</p>
+                    </div>
+                    <div class="z-depth-1 ingredient vegetable">
+                        <img class="fit-picture"
+                            src="/icons/icons8-oignon-96.png"/>
+                        <p>{"400 g oignon"}</p>
+                    </div>
+                    <div class="z-depth-1 ingredient vegetable">
+                        <img class="fit-picture"
+                            src="/icons/icons8-avocat-96.png"/>
+                        <p>{"400 g avocat"}</p>
+                    </div>
+                    <div class="z-depth-1 ingredient meat">
+                        <img class="fit-picture"
+                            src="/icons/icons8-bacon-96.png"/>
+                        <p>{"poitrine de porc"}</p>
+                    </div>
+                    <div class="z-depth-1 ingredient meat">
+                        <img class="fit-picture"
+                            src="/icons/icons8-saucisses-96.png"/>
+                        <p>{"saucisse de strasbourg"}</p>
+                    </div>
+                </div>
+                <ul>
+                    {ingredients}
+                </ul>
+            </>
         }
     }
 
