@@ -170,24 +170,30 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                             Message::ChangeRoute(AppRoute::Recipe(recipe_id))
                         });
                         let recipe_id = recipe.id.clone();
-                        let on_planning_callback = self
-                            .link
-                            .callback(move |_| {
-                                let recipe_id = recipe_id.clone();
-                                Message::OpenModal(recipe_id)
-                            });
+                        let on_planning_callback = self.link.callback(move |_| {
+                            let recipe_id = recipe_id.clone();
+                            Message::OpenModal(recipe_id)
+                        });
 
                         html! {
-                            <li class="waves-effect">
-                                <div class="valign-wrapper">
-                                    <div class="list-elem" onclick=onclick>
-                                        <div class="title" >
-                                            { recipe.name.clone() }
-                                        </div>
-                                    </div>
-                                    <i onclick=on_planning_callback class="material-icons ml-auto">{"event"}</i>
+                            <div class="card horizontal">
+                                <div class="card-stacked">
+                                    <ul class="list">
+                                        <li class="waves-effect with-action">
+                                            <div class="valign-wrapper">
+                                                <div class="list-elem" onclick=onclick>
+                                                    <div class="title" >
+                                                        { recipe.name.clone() }
+                                                    </div>
+                                                </div>
+                                                <div onclick=on_planning_callback class="action event">
+                                                    <i class="material-icons">{"event"}</i>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
-                            </li>
+                            </div>
                         }
                     })
                     .collect::<Html>()
@@ -214,9 +220,15 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
             <>
                 <Token/>
                 <Tabs title="Recettes"/>
-                <ul class="list">
-                    {recipe_list}
-                </ul>
+
+                <div class="planning container">
+                    <div class="row">
+                        <div class="col s12 m6">
+                            {recipe_list}
+                        </div>
+                    </div>
+                </div>
+
                 <div class="fixed-action-btn">
                     <a class="btn-floating btn-large red" onclick=on_add_callback>
                         <i class="large material-icons">{"add"}</i>

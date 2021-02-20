@@ -407,15 +407,18 @@ impl RecipePageComponent {
         let on_save_callback = self.link.callback(|_| Message::OnSave);
         let on_cancel_edit_mode_callback = self.link.callback(|_| Message::OnCancel);
         html! {
-            <li>
-                <a onclick={on_save_callback}>
-                    <i class="material-icons">{"save"}</i>
-                </a>
-                <a onclick=on_cancel_edit_mode_callback>
-                    <i class="material-icons">{"close"}</i>
-                </a>
-
-            </li>
+            <>
+                <li>
+                    <a onclick={on_save_callback}>
+                        <i class="material-icons">{"save"}</i>
+                    </a>
+                </li>
+                <li>
+                    <a onclick=on_cancel_edit_mode_callback>
+                        <i class="material-icons">{"close"}</i>
+                    </a>
+                </li>
+            </>
         }
     }
 
@@ -720,32 +723,32 @@ impl Component for RecipePageComponent {
                             </div>
                         </div>
 
-                        <div class="container">
-                            <div class="section">
-                                <div class="row">
-                                    {header}
-                                </div>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="section">
-                                <h5>{"Ingrédients"}</h5>
-                                <div class="row">
-                                    {ingredients}
-                                </div>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="section">
-                                <h5>{"Instructions"}</h5>
-                                <div class="row">
-                                    {instructions}
-                                </div>
-                            </div>
-                            <div class="divider"></div>
-                            <div class="section">
-                                <div class="row">
-                                    <form class="col s12">
-                                        {source_url}
-                                    </form>
+                        <div class="container planning">
+                            <div class="row">
+                                <div class="col s12 m6">
+                                    <div class="card horizontal">
+                                        <div class="card-stacked">
+                                            <div class="card-content">
+                                                {header}
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="card-content">
+                                                <h5>{"Ingrédients"}</h5>
+                                                {ingredients}
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="card-content">
+                                                <h5>{"Instructions"}</h5>
+                                                {instructions}
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="card-content">
+                                                <form class="col s12">
+                                                    {source_url}
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -282,7 +282,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             <>
                 <Token/>
                 <Tabs title="Planning"/>
-                <div class="container planning">
+                <div class="planning container">
                     <div class="row">
                         <div class="col s12 m6">
                             {html_view}

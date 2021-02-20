@@ -13,11 +13,11 @@
 ## Bugs
 
 - [ ] faster response
-- [ ] improve design
 - [ ] bug crash when change value
 
 ## Done
 
+- [x] improve design
 - [x] planning
 - [x] bring online
 - [x] servings
