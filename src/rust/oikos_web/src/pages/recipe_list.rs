@@ -2,10 +2,11 @@ use crate::components::Tabs;
 use crate::components::Token;
 use crate::root::{AppRoute, DataHandle};
 use crate::{
+    data::{MealPlans, MealPlansItem, MealPlansItemRecipesItem},
     date::next_seven_days,
     services::{Error, MealPlansService, RecipeService},
 };
-use oikos_api::components::schemas::*;
+use oikos_api::components::schemas::RecipeList;
 use wasm_bindgen::prelude::*;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{

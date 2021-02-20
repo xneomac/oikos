@@ -1,6 +1,7 @@
 #![recursion_limit = "1024"]
 
 mod components;
+mod data;
 mod date;
 mod pages;
 mod root;

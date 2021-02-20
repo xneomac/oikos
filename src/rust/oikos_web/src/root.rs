@@ -1,5 +1,6 @@
 use super::pages::*;
-use oikos_api::components::schemas::{MealPlans, RecipeList};
+use crate::data::MealPlans;
+use oikos_api::components::schemas::RecipeList;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::{components::RouterAnchor, prelude::*};

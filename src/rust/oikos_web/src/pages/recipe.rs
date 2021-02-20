@@ -1,10 +1,10 @@
 use crate::components::Token;
 use crate::root::{AppAnchor, AppRoute, DataHandle, DataState};
 use crate::{
+    data::{MealPlans, MealPlansItem, MealPlansItemRecipesItem},
     date::next_seven_days,
     services::{Error, MealPlansService, RecipeService},
 };
-use oikos_api::components::schemas::*;
 use yew::{prelude::*, services::fetch::FetchTask, Properties};
 use yew_state::{SharedHandle, SharedState, SharedStateComponent};
 
@@ -763,6 +763,9 @@ impl Component for RecipePageComponent {
 
 pub type RecipePage = SharedStateComponent<RecipePageComponent>;
 
+use oikos_api::components::schemas::{
+    RecipeIngredientModel, RecipeModel, RecipeModelQuantity, RecipeModelSteps,
+};
 use wasm_bindgen::prelude::*;
 #[wasm_bindgen(inline_js = "
 

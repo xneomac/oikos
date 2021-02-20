@@ -1,11 +1,12 @@
 use crate::components::Tabs;
 use crate::{
     components::Token,
+    data::MealPlans,
     date::format_date,
     root::{AppRoute, DataHandle},
     services::{Error, MealPlansService, RecipeService},
 };
-use oikos_api::components::schemas::{MealPlans, RecipeList, RecipeListItem};
+use oikos_api::components::schemas::{RecipeList, RecipeListItem};
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -176,7 +177,8 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
         let meal_plans: Option<MealPlans> = self.handle.state().meal_plans.clone();
         let mut html_view = vec![];
 
-        if let Some(meal_plans) = meal_plans {
+        if let Some(mut meal_plans) = meal_plans {
+            meal_plans.sort();
             for meal in meal_plans {
                 let mut recipes_counter = 0;
                 let mut html_recipes = vec![];

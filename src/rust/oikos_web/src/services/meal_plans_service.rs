@@ -1,6 +1,7 @@
 use super::Error;
 use super::Requests;
-use oikos_api::components::schemas::*;
+use crate::data::MealPlans;
+use oikos_api::components::schemas;
 use yew::callback::Callback;
 use yew::services::fetch::FetchTask;
 
