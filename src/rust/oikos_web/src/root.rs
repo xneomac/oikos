@@ -85,6 +85,12 @@ impl Component for RootComponent {
         Self { _handle: handle }
     }
 
+    fn rendered(&mut self, first_render: bool) {
+        if first_render {
+            wasm_logger::init(wasm_logger::Config::default());
+        }
+    }
+
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
         true
     }

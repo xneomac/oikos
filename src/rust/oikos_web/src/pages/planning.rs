@@ -202,21 +202,41 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                             Message::CheckRecipe(meal_date.clone(), recipe_id)
                         });
 
-                        if !meal_recipe.done || self.show_done_recipes {
+                        if !meal_recipe.done {
                             recipes_counter += 1;
                             html_recipes.push(html! {
-                                <div class="card horizontal">
-                                    <div class="card-stacked">
-                                        <div class="card-content">
-                                            <span class="card-title">{recipe.name.clone()}</span>
+
+                                <li class="waves-effect with-action">
+                                    <div class="valign-wrapper">
+                                        <div class="list-elem" onclick=on_read_callback>
+                                            <div class="title" >
+                                                { recipe.name.clone() }
+                                            </div>
                                         </div>
-                                        <div class="card-action">
-                                            <a onclick=on_read_callback href="#">{"consulter"}</a>
-                                            <a onclick=on_delete_callback href="#">{"supprimer"}</a>
-                                            <a onclick=on_check_callback href="#">{"valider"}</a>
+                                        <div onclick=on_delete_callback class="action clear">
+                                            <i class="material-icons clear">{"clear"}</i>
+                                        </div>
+                                        <div onclick=on_check_callback class="action check">
+                                            <i class="material-icons check">{"check"}</i>
                                         </div>
                                     </div>
-                                </div>
+                                </li>
+                            })
+                        } else if self.show_done_recipes {
+                            recipes_counter += 1;
+                            html_recipes.push(html! {
+                                <li class="waves-effect with-action">
+                                    <div class="valign-wrapper">
+                                        <div class="list-elem" onclick=on_read_callback>
+                                            <div class="title" >
+                                                { recipe.name.clone() }
+                                            </div>
+                                        </div>
+                                        <div class="action check selected">
+                                            <i class="material-icons check">{"check"}</i>
+                                        </div>
+                                    </div>
+                                </li>
                             })
                         }
                     }
@@ -226,8 +246,16 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                     let meal_date = meal.clone().date;
                     html_view.push(html! {
                         <>
-                            <h5>{format_date(&meal_date)}</h5>
-                            {html_recipes}
+                            <div class="card horizontal">
+                                <div class="card-stacked">
+                                    <div class="card-content">
+                                        <span class="card-title">{format_date(&meal_date)}</span>
+                                    </div>
+                                    <ul class="list">
+                                        {html_recipes}
+                                    </ul>
+                                </div>
+                            </div>
                         </>
                     })
                 }
@@ -237,12 +265,16 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
         let expand = if self.show_done_recipes {
             let callback = self.link.callback(move |_| Message::ShowDoneRecipes(false));
             html! {
-                <a onclick=callback href="#">{"hide done recipes"}</a>
+                <div class="container-action">
+                    <a onclick=callback href="#">{"hide done recipes"}</a>
+                </div>
             }
         } else {
             let callback = self.link.callback(move |_| Message::ShowDoneRecipes(true));
             html! {
-                <a onclick=callback href="#">{"show done recipes"}</a>
+                <div class="container-action">
+                    <a onclick=callback href="#">{"show done recipes"}</a>
+                </div>
             }
         };
 
@@ -250,7 +282,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             <>
                 <Token/>
                 <Tabs title="Planning"/>
-                <div class="container">
+                <div class="container planning">
                     <div class="row">
                         <div class="col s12 m6">
                             {html_view}

@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 
 pub type MealPlans = Vec<MealPlansItem>;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct MealPlansItem {
     pub date: String,
     pub recipes: Vec<MealPlansItemRecipesItem>,
@@ -22,15 +22,9 @@ impl Ord for MealPlansItem {
     }
 }
 
-impl PartialEq for MealPlansItem {
-    fn eq(&self, other: &Self) -> bool {
-        self.date == other.date
-    }
-}
-
 impl Eq for MealPlansItem {}
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct MealPlansItemRecipesItem {
     pub done: bool,
     pub id: String,

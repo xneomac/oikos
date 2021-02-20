@@ -136,6 +136,7 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                 self.handle.reduce(move |state| {
                     state.meal_plans = meal_plans;
                 });
+                unsafe { close_modal() }
             }
             Message::OpenModal(recipe_id) => {
                 self.recipe_id = Some(recipe_id);
@@ -245,4 +246,16 @@ pub type RecipeListPage = SharedStateComponent<RecipeListPageComponent>;
         }")]
 extern "C" {
     fn open_modal();
+}
+
+#[wasm_bindgen(inline_js = "
+
+        export function close_modal() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+            var instance = M.Modal.getInstance(elems[0]);
+            instance.close();
+        }")]
+extern "C" {
+    fn close_modal();
 }
