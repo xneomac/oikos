@@ -1,10 +1,14 @@
 use crate::components::Token;
-use crate::root::{AppAnchor, AppRoute};
-use crate::services::{Error, RecipeService};
+use crate::root::{AppAnchor, AppRoute, DataHandle, DataState};
+use crate::{
+    date::next_seven_days,
+    services::{Error, MealPlansService, RecipeService},
+};
 use oikos_api::components::schemas::*;
 use yew::{prelude::*, services::fetch::FetchTask, Properties};
+use yew_state::{SharedHandle, SharedState, SharedStateComponent};
 
-pub struct RecipePage {
+pub struct RecipePageComponent {
     link: ComponentLink<Self>,
     recipe_service: RecipeService,
     recipe: Option<RecipeModel>,
@@ -12,6 +16,9 @@ pub struct RecipePage {
     response: Callback<Result<RecipeModel, Error>>,
     props: Props,
     edit_mode: bool,
+    meal_plans_service: MealPlansService,
+    meal_plans_task: Option<FetchTask>,
+    meal_plans_response: Callback<Result<MealPlans, Error>>,
 }
 
 pub enum Message {
@@ -35,19 +42,48 @@ pub enum Message {
     OnQuantityDelete,
     OnEditMode,
     OnCancel,
+    PlanRecipe(String),
+    MealPlansResponse(Result<MealPlans, Error>),
+    OpenModal,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
     pub recipe_id: String,
+    #[prop_or_default]
+    handle: SharedHandle<DataState>,
 }
 
-impl RecipePage {
+impl SharedState for Props {
+    type Handle = SharedHandle<DataState>;
+
+    fn handle(&mut self) -> &mut Self::Handle {
+        &mut self.handle
+    }
+}
+
+impl RecipePageComponent {
     fn get_recipe(&mut self) {
         self.task = Some(
             self.recipe_service
                 .get_recipe_by_id(&self.props.recipe_id, self.response.clone()),
         );
+    }
+
+    fn get_meal_plans(&mut self) {
+        self.meal_plans_task = Some(
+            self.meal_plans_service
+                .get_meal_plans(self.meal_plans_response.clone()),
+        );
+    }
+
+    fn update_meal_plans(&mut self, meal_plans: Option<MealPlans>) {
+        if let Some(meal_plans) = meal_plans {
+            self.meal_plans_task = Some(
+                self.meal_plans_service
+                    .update_meal_plans(meal_plans, self.meal_plans_response.clone()),
+            );
+        }
     }
 
     fn get_ingredients(&self, recipe: &RecipeModel) -> Html {
@@ -358,35 +394,46 @@ impl RecipePage {
         }
     }
 
-    fn get_edit_menu(&self, _recipe: &RecipeModel) -> Html {
-        let on_save = self.link.callback(|_| Message::OnSave);
+    fn get_menu(&self, _recipe: &RecipeModel) -> Html {
+        let callback = self.link.callback(|_| Message::OnEditMode);
         html! {
             <li>
-                <a onclick={on_save}><i class="material-icons">{"save"}</i></a>
+                <a onclick={callback}><i class="material-icons">{"edit"}</i></a>
+            </li>
+        }
+    }
+
+    fn get_edit_menu(&self, _recipe: &RecipeModel) -> Html {
+        let on_save_callback = self.link.callback(|_| Message::OnSave);
+        let on_cancel_edit_mode_callback = self.link.callback(|_| Message::OnCancel);
+        html! {
+            <li>
+                <a onclick={on_save_callback}>
+                    <i class="material-icons">{"save"}</i>
+                </a>
+                <a onclick=on_cancel_edit_mode_callback>
+                    <i class="material-icons">{"close"}</i>
+                </a>
+
             </li>
         }
     }
 
     fn get_fab(&self, _recipe: &RecipeModel) -> Html {
-        let on_edit_mode_callback = self.link.callback(|_| Message::OnEditMode);
+        let callback = self.link.callback(move |_| Message::OpenModal);
         html! {
-            <a class="btn-floating btn-large red" onclick=on_edit_mode_callback>
-                <i class="large material-icons">{"edit"}</i>
+            <a class="btn-floating btn-large red" onclick=callback>
+                <i class="large material-icons">{"event"}</i>
             </a>
         }
     }
 
     fn get_fab_edit(&self, _recipe: &RecipeModel) -> Html {
-        let on_cancel_edit_mode_callback = self.link.callback(|_| Message::OnCancel);
-        html! {
-            <a class="btn-floating btn-large red" onclick=on_cancel_edit_mode_callback>
-                <i class="large material-icons">{"close"}</i>
-            </a>
-        }
+        html! {}
     }
 }
 
-impl Component for RecipePage {
+impl Component for RecipePageComponent {
     type Message = Message;
     type Properties = Props;
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
@@ -395,6 +442,9 @@ impl Component for RecipePage {
             response: link.callback(Message::OnRecipeFetch),
             recipe: None,
             task: None,
+            meal_plans_service: MealPlansService::new(),
+            meal_plans_response: link.callback(Message::MealPlansResponse),
+            meal_plans_task: None,
             props,
             link,
             edit_mode: false,
@@ -404,6 +454,7 @@ impl Component for RecipePage {
     fn rendered(&mut self, first_render: bool) {
         if first_render {
             self.get_recipe();
+            self.get_meal_plans();
         }
     }
 
@@ -550,11 +601,51 @@ impl Component for RecipePage {
             Message::OnCancel => {
                 self.edit_mode = false;
             }
+            Message::PlanRecipe(meal_date) => {
+                let mut meal_plans = self.props.handle().state().meal_plans.clone();
+                if let Some(meals_plans_option) = meal_plans.as_mut() {
+                    if let Some(meal) = meals_plans_option
+                        .iter_mut()
+                        .find(|meals| meals.date == meal_date)
+                    {
+                        meal.recipes.push(MealPlansItemRecipesItem {
+                            done: false,
+                            id: self.props.recipe_id.clone(),
+                            servings: None,
+                        })
+                    } else {
+                        meals_plans_option.push(MealPlansItem {
+                            date: meal_date,
+                            recipes: vec![MealPlansItemRecipesItem {
+                                done: false,
+                                id: self.props.recipe_id.clone(),
+                                servings: None,
+                            }],
+                        })
+                    }
+                }
+                self.update_meal_plans(meal_plans.clone());
+                self.props.handle().reduce(move |state| {
+                    state.meal_plans = meal_plans;
+                });
+                unsafe { close_modal() }
+            }
+            Message::MealPlansResponse(Ok(meal_plans)) => {
+                self.props
+                    .handle()
+                    .reduce(move |state| state.meal_plans = Some(meal_plans));
+                self.meal_plans_task = None;
+            }
+            Message::MealPlansResponse(Err(_)) => {
+                self.meal_plans_task = None;
+            }
+            Message::OpenModal => unsafe { open_modal() },
         }
         true
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        self.props = props;
         false
     }
 
@@ -578,9 +669,25 @@ impl Component for RecipePage {
                             self.get_instructions(&recipe),
                             self.get_source_url(&recipe),
                             self.get_fab(&recipe),
-                            html! {},
+                            self.get_menu(&recipe),
                         )
                     };
+
+                let next_date = next_seven_days()
+                    .iter()
+                    .map(|(day_code, day_string)| {
+                        let day_code = day_code.clone();
+                        let callback = self.link.callback(move |_| {
+                            let day_code = day_code.clone();
+                            Message::PlanRecipe(day_code)
+                        });
+                        html! {
+                            <li onclick=callback class="waves-effect">
+                                <div class="valign-wrapper">{day_string}</div>
+                            </li>
+                        }
+                    })
+                    .collect::<Html>();
 
                 html! {
                     <>
@@ -603,6 +710,14 @@ impl Component for RecipePage {
 
                         <div class="fixed-action-btn">
                             {fab_action}
+                        </div>
+
+                        <div id="modal1" class="modal bottom-sheet">
+                            <div class="modal-content">
+                                <ul class="list">
+                                    {next_date}
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="container">
@@ -644,4 +759,31 @@ impl Component for RecipePage {
             },
         }
     }
+}
+
+pub type RecipePage = SharedStateComponent<RecipePageComponent>;
+
+use wasm_bindgen::prelude::*;
+#[wasm_bindgen(inline_js = "
+
+        export function open_modal() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+            var instance = M.Modal.getInstance(elems[0]);
+            instance.open();
+        }")]
+extern "C" {
+    fn open_modal();
+}
+
+#[wasm_bindgen(inline_js = "
+
+        export function close_modal() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems);
+            var instance = M.Modal.getInstance(elems[0]);
+            instance.close();
+        }")]
+extern "C" {
+    fn close_modal();
 }

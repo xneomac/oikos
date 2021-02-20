@@ -136,14 +136,6 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                     state.meal_plans = meal_plans;
                 });
             }
-            Message::MealPlansResponse(Ok(meal_plans)) => {
-                self.handle
-                    .reduce(move |state| state.meal_plans = Some(meal_plans));
-                self.meal_plans_task = None;
-            }
-            Message::MealPlansResponse(Err(_)) => {
-                self.meal_plans_task = None;
-            }
             Message::OpenModal(recipe_id) => {
                 self.recipe_id = Some(recipe_id);
                 unsafe { open_modal() }
