@@ -2,6 +2,7 @@ use crate::components::Token;
 use crate::root::{AppRoute, DataHandle};
 use crate::services::{Error, RecipeService};
 use oikos_api::components::schemas::RecipeList;
+use wasm_bindgen::prelude::*;
 use yew::{prelude::*, services::fetch::FetchTask};
 use yew_router::{
     agent::RouteRequest,
@@ -55,6 +56,7 @@ impl<STATE: RouterState> Component for SearchPageComponent<STATE> {
             self.request();
             self.link
                 .send_message(Message::OnSearchChange("".to_string()));
+            focus_search();
         }
     }
 
@@ -141,7 +143,7 @@ impl<STATE: RouterState> Component for SearchPageComponent<STATE> {
                         <div class="nav-wrapper">
                         <form>
                             <div class="input-field">
-                            <input oninput=on_search_change_callback id="search" type="search" required=true/>
+                            <input class="search" oninput=on_search_change_callback id="search" type="search" required=true/>
                             <label class="label-icon" for="search"><i class="material-icons">{"search"}</i></label>
                             <i onclick=on_close_click class="material-icons">{"close"}</i>
                             </div>
@@ -158,3 +160,13 @@ impl<STATE: RouterState> Component for SearchPageComponent<STATE> {
 }
 
 pub type SearchPage = SharedStateComponent<SearchPageComponent>;
+
+#[wasm_bindgen(inline_js = "
+
+        export function focus_search() {
+            var elems = document.querySelectorAll('.search');
+            elems[0].focus();
+        }")]
+extern "C" {
+    fn focus_search();
+}
