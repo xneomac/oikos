@@ -1,5 +1,5 @@
 use super::Error;
-use super::Requests;
+use super::{request::Request, Requests};
 use oikos_api::components::schemas::*;
 use yew::callback::Callback;
 use yew::services::fetch::FetchTask;
@@ -7,13 +7,22 @@ use yew::services::fetch::FetchTask;
 #[derive(Default, Debug)]
 pub struct RecipeService {
     requests: Requests,
+    pub get_all: Request,
 }
 
 impl RecipeService {
     pub fn new() -> Self {
         Self {
             requests: Requests::new(),
+            get_all: Request::new(),
         }
+    }
+
+    pub fn get_recipes2(&mut self, callback: Callback<Result<RecipeList, Error>>) {
+        self.get_all.request(
+            self.requests
+                .get::<RecipeList>("/api/recipes".to_string(), callback),
+        );
     }
 
     pub fn get_recipes(&mut self, callback: Callback<Result<RecipeList, Error>>) -> FetchTask {

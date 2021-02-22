@@ -1,6 +1,7 @@
 mod auth_service;
 mod meal_plans_service;
 mod recipe_service;
+pub mod request;
 
 use lazy_static::lazy_static;
 use log::debug;

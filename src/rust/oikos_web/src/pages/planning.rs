@@ -23,8 +23,6 @@ pub struct PlanningPageComponent<STATE: RouterState = ()> {
     router: RouteAgentDispatcher<STATE>,
     recipes_task: Option<FetchTask>,
     recipes_response: Callback<Result<RecipeList, Error>>,
-    meal_plans_task: Option<FetchTask>,
-    meal_plans_response: Callback<Result<MealPlans, Error>>,
     link: ComponentLink<Self>,
     show_done_recipes: bool,
 }
@@ -47,17 +45,15 @@ impl<STATE: RouterState> PlanningPageComponent<STATE> {
     }
 
     fn get_meal_plans(&mut self) {
-        self.meal_plans_task = Some(
-            self.meal_plans_service
-                .get_meal_plans(self.meal_plans_response.clone()),
-        );
+        self.meal_plans_service
+            .get_meal_plans(self.link.callback(Message::MealPlansResponse));
     }
 
     fn update_meal_plans(&mut self, meal_plans: Option<MealPlans>) {
-        if let Some(meal_plans) = meal_plans {
-            self.meal_plans_task = Some(
-                self.meal_plans_service
-                    .update_meal_plans(meal_plans, self.meal_plans_response.clone()),
+        if let Some(meal_plans) = &meal_plans {
+            self.meal_plans_service.update_meal_plans(
+                meal_plans.clone(),
+                self.link.callback(Message::MealPlansResponse),
             );
         }
     }
@@ -76,16 +72,14 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
     type Properties = DataHandle;
     fn create(handle: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
-            handle,
             recipes_service: RecipeService::new(),
             meal_plans_service: MealPlansService::new(),
             router: RouteAgentDispatcher::new(),
             recipes_task: None,
             recipes_response: link.callback(Message::RecipesResponse),
-            meal_plans_task: None,
-            meal_plans_response: link.callback(Message::MealPlansResponse),
             link,
             show_done_recipes: false,
+            handle,
         }
     }
 
@@ -106,13 +100,10 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
             Message::RecipesResponse(Err(_)) => {
                 self.recipes_task = None;
             }
-            Message::MealPlansResponse(Ok(meal_plans)) => {
+            Message::MealPlansResponse(meal_plans) => {
+                let meal_plans = self.meal_plans_service.get_meal_plans.response(meal_plans);
                 self.handle
-                    .reduce(move |state| state.meal_plans = Some(meal_plans));
-                self.meal_plans_task = None;
-            }
-            Message::MealPlansResponse(Err(_)) => {
-                self.meal_plans_task = None;
+                    .reduce(move |state| state.meal_plans = meal_plans);
             }
             Message::ChangeRoute(route) => {
                 let route = Route::from(route);
@@ -277,6 +268,28 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                 </div>
             }
         };
+
+        if self.handle.state().meal_plans.is_none() || self.handle.state().recipes.is_none() {
+            return html! {
+                <>
+                    <Token/>
+                    <Tabs title="Recettes"/>
+                    <div class="loader-page">
+                        <div class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-red-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            };
+        }
 
         html! {
             <>

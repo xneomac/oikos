@@ -8,7 +8,7 @@ use crate::{
 };
 use oikos_api::components::schemas::RecipeList;
 use wasm_bindgen::prelude::*;
-use yew::{prelude::*, services::fetch::FetchTask};
+use yew::prelude::*;
 use yew_router::{
     agent::RouteRequest,
     prelude::{Route, RouteAgentDispatcher},
@@ -19,14 +19,10 @@ use yewtil::NeqAssign;
 
 pub struct RecipeListPageComponent<STATE: RouterState = ()> {
     handle: DataHandle,
-    recipes_service: RecipeService,
-    meal_plans_service: MealPlansService,
-    meal_plans_task: Option<FetchTask>,
-    meal_plans_response: Callback<Result<MealPlans, Error>>,
     link: ComponentLink<Self>,
     router: RouteAgentDispatcher<STATE>,
-    recipes_task: Option<FetchTask>,
-    response: Callback<Result<RecipeList, Error>>,
+    meal_plans_service: MealPlansService,
+    recipes_service: RecipeService,
     recipe_id: Option<String>,
 }
 
@@ -38,70 +34,39 @@ pub enum Message {
     OpenModal(String),
 }
 
-impl<STATE: RouterState> RecipeListPageComponent<STATE> {
-    fn get_recipes(&mut self) {
-        self.recipes_task = Some(self.recipes_service.get_recipes(self.response.clone()));
-    }
-
-    fn get_meal_plans(&mut self) {
-        self.meal_plans_task = Some(
-            self.meal_plans_service
-                .get_meal_plans(self.meal_plans_response.clone()),
-        );
-    }
-
-    fn update_meal_plans(&mut self, meal_plans: Option<MealPlans>) {
-        if let Some(meal_plans) = meal_plans {
-            self.meal_plans_task = Some(
-                self.meal_plans_service
-                    .update_meal_plans(meal_plans, self.meal_plans_response.clone()),
-            );
-        }
-    }
-}
-
 impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
     type Message = Message;
     type Properties = DataHandle;
     fn create(handle: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
-            handle,
-            recipes_service: RecipeService::new(),
             meal_plans_service: MealPlansService::new(),
-            meal_plans_response: link.callback(Message::MealPlansResponse),
-            meal_plans_task: None,
-            response: link.callback(Message::Response),
+            recipes_service: RecipeService::new(),
             link,
             router: RouteAgentDispatcher::new(),
-            recipes_task: None,
             recipe_id: None,
+            handle,
         }
     }
 
     fn rendered(&mut self, first_render: bool) {
         if first_render {
-            self.get_meal_plans();
-            self.get_recipes();
+            self.meal_plans_service
+                .get_meal_plans(self.link.callback(Message::MealPlansResponse));
+            self.recipes_service
+                .get_recipes2(self.link.callback(Message::Response));
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Message::Response(Ok(recipes)) => {
+            Message::Response(recipes) => {
+                let recipes = self.recipes_service.get_all.response(recipes);
+                self.handle.reduce(move |state| state.recipes = recipes);
+            }
+            Message::MealPlansResponse(meal_plans) => {
+                let meal_plans = self.meal_plans_service.get_meal_plans.response(meal_plans);
                 self.handle
-                    .reduce(move |state| state.recipes = Some(recipes));
-                self.recipes_task = None;
-            }
-            Message::Response(Err(_)) => {
-                self.recipes_task = None;
-            }
-            Message::MealPlansResponse(Ok(meal_plans)) => {
-                self.handle
-                    .reduce(move |state| state.meal_plans = Some(meal_plans));
-                self.meal_plans_task = None;
-            }
-            Message::MealPlansResponse(Err(_)) => {
-                self.meal_plans_task = None;
+                    .reduce(move |state| state.meal_plans = meal_plans);
             }
             Message::ChangeRoute(route) => {
                 let route = Route::from(route);
@@ -132,15 +97,20 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                         }
                     }
                 }
-                self.update_meal_plans(meal_plans.clone());
+                if let Some(meal_plans) = &meal_plans {
+                    self.meal_plans_service.update_meal_plans(
+                        meal_plans.clone(),
+                        self.link.callback(Message::MealPlansResponse),
+                    );
+                }
                 self.handle.reduce(move |state| {
                     state.meal_plans = meal_plans;
                 });
-                unsafe { close_modal() }
+                close_modal();
             }
             Message::OpenModal(recipe_id) => {
                 self.recipe_id = Some(recipe_id);
-                unsafe { open_modal() }
+                open_modal();
             }
         }
         true
@@ -215,6 +185,28 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                 }
             })
             .collect::<Html>();
+
+        if self.handle.state().meal_plans.is_none() || self.handle.state().recipes.is_none() {
+            return html! {
+                <>
+                    <Token/>
+                    <Tabs title="Recettes"/>
+                    <div class="loader-page">
+                        <div class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-red-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            };
+        }
 
         html! {
             <>

@@ -1,5 +1,5 @@
 use crate::components::Token;
-use crate::root::{AppAnchor, AppRoute, DataHandle, DataState};
+use crate::root::{AppAnchor, AppRoute, DataState};
 use crate::{
     data::{MealPlans, MealPlansItem, MealPlansItemRecipesItem},
     date::next_seven_days,
@@ -17,8 +17,6 @@ pub struct RecipePageComponent {
     props: Props,
     edit_mode: bool,
     meal_plans_service: MealPlansService,
-    meal_plans_task: Option<FetchTask>,
-    meal_plans_response: Callback<Result<MealPlans, Error>>,
 }
 
 pub enum Message {
@@ -68,22 +66,6 @@ impl RecipePageComponent {
             self.recipe_service
                 .get_recipe_by_id(&self.props.recipe_id, self.response.clone()),
         );
-    }
-
-    fn get_meal_plans(&mut self) {
-        self.meal_plans_task = Some(
-            self.meal_plans_service
-                .get_meal_plans(self.meal_plans_response.clone()),
-        );
-    }
-
-    fn update_meal_plans(&mut self, meal_plans: Option<MealPlans>) {
-        if let Some(meal_plans) = meal_plans {
-            self.meal_plans_task = Some(
-                self.meal_plans_service
-                    .update_meal_plans(meal_plans, self.meal_plans_response.clone()),
-            );
-        }
     }
 
     fn get_ingredients(&self, recipe: &RecipeModel) -> Html {
@@ -446,8 +428,6 @@ impl Component for RecipePageComponent {
             recipe: None,
             task: None,
             meal_plans_service: MealPlansService::new(),
-            meal_plans_response: link.callback(Message::MealPlansResponse),
-            meal_plans_task: None,
             props,
             link,
             edit_mode: false,
@@ -457,7 +437,8 @@ impl Component for RecipePageComponent {
     fn rendered(&mut self, first_render: bool) {
         if first_render {
             self.get_recipe();
-            self.get_meal_plans();
+            self.meal_plans_service
+                .get_meal_plans(self.link.callback(Message::MealPlansResponse));
         }
     }
 
@@ -627,22 +608,24 @@ impl Component for RecipePageComponent {
                         })
                     }
                 }
-                self.update_meal_plans(meal_plans.clone());
+                if let Some(meal_plans) = &meal_plans {
+                    self.meal_plans_service.update_meal_plans(
+                        meal_plans.clone(),
+                        self.link.callback(Message::MealPlansResponse),
+                    );
+                }
                 self.props.handle().reduce(move |state| {
                     state.meal_plans = meal_plans;
                 });
-                unsafe { close_modal() }
+                close_modal();
             }
-            Message::MealPlansResponse(Ok(meal_plans)) => {
+            Message::MealPlansResponse(meal_plans) => {
+                let meal_plans = self.meal_plans_service.get_meal_plans.response(meal_plans);
                 self.props
-                    .handle()
-                    .reduce(move |state| state.meal_plans = Some(meal_plans));
-                self.meal_plans_task = None;
+                    .handle
+                    .reduce(move |state| state.meal_plans = meal_plans);
             }
-            Message::MealPlansResponse(Err(_)) => {
-                self.meal_plans_task = None;
-            }
-            Message::OpenModal => unsafe { open_modal() },
+            Message::OpenModal => open_modal(),
         }
         true
     }
@@ -758,6 +741,30 @@ impl Component for RecipePageComponent {
             None => html! {
                 <>
                     <Token/>
+                    <div class="navbar-fixed">
+                        <nav>
+                            <div class="nav-wrapper">
+                                <ul class="left">
+                                    <AppAnchor route=AppRoute::RecipeList>
+                                        <i class="material-icons">{"chevron_left"}</i>
+                                    </AppAnchor>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="loader-page">
+                        <div class="preloader-wrapper active">
+                            <div class="spinner-layer spinner-red-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div><div class="gap-patch">
+                                <div class="circle"></div>
+                            </div><div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
                 </>
             },
         }

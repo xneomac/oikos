@@ -194,3 +194,10 @@ i.ml-auto {
 .card .card-content p {
   margin-bottom: 1rem;
 }
+
+.loader-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 112px)
+}

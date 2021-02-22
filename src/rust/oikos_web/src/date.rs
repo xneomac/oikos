@@ -1,6 +1,4 @@
-use chrono::{
-    DateTime, Datelike, Duration, Local, NaiveDate, NaiveDateTime, NaiveTime, Utc, Weekday,
-};
+use chrono::{Datelike, Duration, NaiveDate, Utc};
 
 static DAYS: [&'static str; 7] = [
     "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche",
