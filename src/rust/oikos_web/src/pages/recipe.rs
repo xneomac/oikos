@@ -126,13 +126,13 @@ impl RecipePageComponent {
                     .callback(move |_| Message::OnIngredientDelete(index));
 
                 let ingredient_amount = if let Some(amount) = ingredient.amount {
-                    format!("{} ", amount)
+                    format!("{}", amount)
                 } else {
                     "".to_string()
                 };
 
                 let ingredient_unit = if let Some(unit) = &ingredient.unit {
-                    format!("{} ", unit)
+                    unit.clone()
                 } else {
                     "".to_string()
                 };
@@ -146,7 +146,7 @@ impl RecipePageComponent {
                             <input disabled={!self.edit_mode} value={ingredient_unit} oninput={on_ingredient_unit_change_callback} id="unit" type="text" class="validate"/>
                         </div>
                         <div class="input-field col s6">
-                            <input disabled={!self.edit_mode} value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} id="name" type="text" class="validate"/>
+                            <input disabled={!self.edit_mode} value={ingredient.name.clone()} oninput={on_ingredient_name_change_callback} autocorrect="off" autocapitalize="none" id="name" type="text" class="validate"/>
                         </div>
                         <div class="input-field col s2">
                             <button onclick={on_ingredient_delete_callback} class="btn waves-effect waves-light" name="action">
@@ -180,7 +180,7 @@ impl RecipePageComponent {
         match &recipe.source_url {
             Some(source_url) => html! {
                 <div class="row">
-                    {source_url}
+                    <a href={source_url.to_string()}>{"source"}</a>
                 </div>
             },
             None => html! {},
@@ -468,7 +468,7 @@ impl Component for RecipePageComponent {
             Message::OnIngredientAmountChange(index, amount) => {
                 if let Some(recipe) = self.recipe.as_mut() {
                     if let Some(ingredient) = recipe.ingredients.get_mut(index) {
-                        ingredient.amount = amount.parse::<f64>().map_or_else(|_err| None, Some);
+                        ingredient.amount = amount.parse::<f64>().map_or_else(|_| None, Some);
                     }
                 }
             }
