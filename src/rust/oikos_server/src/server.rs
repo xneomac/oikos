@@ -4,6 +4,7 @@ mod auth;
 mod database;
 mod meal_plan;
 mod recipe;
+mod shopping_list;
 
 use async_trait::async_trait;
 use oikos_api::{models::*, server::OikosApi};
@@ -16,6 +17,8 @@ pub enum ServerError {
     AuthError(#[from] auth::AuthError),
     #[error("meal plans error")]
     MealPlanError(#[from] meal_plan::MealPlanError),
+    #[error("shopping list error")]
+    ShoppingListError(#[from] shopping_list::ShoppingListError),
 }
 
 #[derive(Clone)]
@@ -145,6 +148,17 @@ impl OikosApi for Server {
         use update_meal_plans::*;
         match self.update_meal_plans(meal_plans, &authorization).await {
             Ok(meal_plans) => Ok(Success::Status200(meal_plans)),
+            Err(err) => Err(Error::Unknown(err.into())),
+        }
+    }
+
+    async fn get_shopping_list(
+        &self,
+        get_shopping_list::Parameters { authorization }: get_shopping_list::Parameters,
+    ) -> Result<get_shopping_list::Success, get_shopping_list::Error<Self::Error>> {
+        use get_shopping_list::*;
+        match self.get_shopping_list(&authorization).await {
+            Ok(shopping_list) => Ok(Success::Status200(shopping_list)),
             Err(err) => Err(Error::Unknown(err.into())),
         }
     }

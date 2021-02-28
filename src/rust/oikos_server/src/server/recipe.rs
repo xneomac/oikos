@@ -83,7 +83,7 @@ impl crate::server::Server {
         recipe.ingredients.iter_mut().for_each(|ingredient| {
             if ingredient.icon.is_none() {
                 if let Some(info) = ingredient_info(&ingredient.name) {
-                    ingredient.icon = Some(info.icon.to_string());
+                    ingredient.icon = info.icon.map(|text| text.to_string());
                     ingredient.category = Some(info.category.to_string());
                 }
             }

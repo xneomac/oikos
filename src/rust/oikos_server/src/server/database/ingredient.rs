@@ -34,13 +34,23 @@ use IngredientCategory::*;
 
 #[derive(Clone, Copy)]
 pub struct IngredientInfo {
-    pub icon: &'static str,
+    pub icon: Option<&'static str>,
     pub category: IngredientCategory,
 }
 
 impl IngredientInfo {
     pub fn new(icon: &'static str, category: IngredientCategory) -> Self {
-        Self { icon, category }
+        Self {
+            icon: Some(icon),
+            category,
+        }
+    }
+
+    pub fn category(category: IngredientCategory) -> Self {
+        Self {
+            icon: None,
+            category,
+        }
     }
 }
 
@@ -286,6 +296,79 @@ lazy_static! {
             "huile de tournesol",
             IngredientInfo::new("/icons/icons8-sunflower-oil-96.png", Epicerie)
         ),
+        (
+            "parmesan",
+            IngredientInfo::new("/icons/icons8-fromage-96.png", Fromagerie)
+        ),
+        (
+            "pecorino",
+            IngredientInfo::new("/icons/icons8-fromage-96.png", Fromagerie)
+        ),
+        (
+            "emmental",
+            IngredientInfo::new("/icons/icons8-fromage-96.png", Fromagerie)
+        ),
+        (
+            "cheddar",
+            IngredientInfo::new("/icons/icons8-fromage-96.png", Fromagerie)
+        ),
+        (
+            "feta",
+            IngredientInfo::new("/icons/icons8-fromage-96.png", Fromagerie)
+        ),
+        (
+            "sel",
+            IngredientInfo::new("/icons/icons8-salière-96.png", Epicerie)
+        ),
+        (
+            "poivre",
+            IngredientInfo::new("/icons/icons8-poivrière-96.png", Epicerie)
+        ),
+        (
+            "concombre",
+            IngredientInfo::new("/icons/icons8-concombre-96.png", FruitEtLegumes)
+        ),
+        (
+            "tomate cerise",
+            IngredientInfo::new("/icons/icons8-tomate-96.png", FruitEtLegumes)
+        ),
+        (
+            "tomate",
+            IngredientInfo::new("/icons/icons8-tomate-96.png", FruitEtLegumes)
+        ),
+        (
+            "poireau",
+            IngredientInfo::new("/icons/icons8-poireau-96.png", FruitEtLegumes)
+        ),
+        (
+            "lardons",
+            IngredientInfo::new("/icons/icons8-cuts-of-pork-96.png", Boucherie)
+        ),
+        (
+            "pancetta",
+            IngredientInfo::new("/icons/icons8-cuts-of-pork-96.png", Boucherie)
+        ),
+        (
+            "jus de citron",
+            IngredientInfo::new("/icons/icons8-agrumes-96.png", FruitEtLegumes)
+        ),
+        (
+            "citron",
+            IngredientInfo::new("/icons/icons8-agrumes-96.png", FruitEtLegumes)
+        ),
+        (
+            "yaourt",
+            IngredientInfo::new("/icons/icons8-yaourt-96.png", Cremerie)
+        ),
+        (
+            "yaourt grec",
+            IngredientInfo::new("/icons/icons8-yaourt-96.png", Cremerie)
+        ),
+        ("spaghetti", IngredientInfo::category(Epicerie)),
+        ("pâte brisée", IngredientInfo::category(Epicerie)),
+        ("creme fraiche liquide", IngredientInfo::category(Cremerie)),
+        ("persil plat", IngredientInfo::category(FruitEtLegumes)),
+        ("menthe", IngredientInfo::category(FruitEtLegumes)),
     ]
     .iter()
     .copied()

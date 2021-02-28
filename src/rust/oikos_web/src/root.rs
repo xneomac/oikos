@@ -1,6 +1,6 @@
 use super::pages::*;
 use crate::data::MealPlans;
-use oikos_api::components::schemas::RecipeList;
+use oikos_api::components::schemas::{RecipeList, ShoppingList};
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yew_router::{components::RouterAnchor, prelude::*};
@@ -33,6 +33,7 @@ pub type AppAnchor = RouterAnchor<AppRoute>;
 pub struct DataState {
     pub recipes: Option<RecipeList>,
     pub meal_plans: Option<MealPlans>,
+    pub shopping_list: Option<ShoppingList>,
 }
 
 impl Storable for DataState {

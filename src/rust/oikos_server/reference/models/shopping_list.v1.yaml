@@ -4,4 +4,6 @@ properties:
   items:
     type: array
     items:
-      $ref: ''
+      $ref: ./shopping_list_category.v1.yaml
+required:
+  - items

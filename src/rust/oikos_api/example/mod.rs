@@ -4,7 +4,8 @@ pub mod components {
         use crate::components::schemas::{
             AccessToken, AccessTokenRequest, Forbidden, Info, MealPlans, Notfound,
             RecipeIngredientModel, RecipeList, RecipeModel, RecipeModelHaccp, RecipeModelOvenTemp,
-            RecipeModelQuantity, RecipeModelSourceBook, RecipeModelSteps, TempUnit, Unauthorized,
+            RecipeModelQuantity, RecipeModelSourceBook, RecipeModelSteps, ShoppingList,
+            ShoppingListCategory, ShoppingListItem, TempUnit, Unauthorized,
         };
         use serde_json::json;
 
@@ -100,6 +101,37 @@ pub mod components {
         pub struct RecipeModelSourceBookExample;
 
         pub struct RecipeModelStepsExample;
+
+        pub struct ShoppingListExample;
+
+        const SHOPPING_LIST: &str = r#"{"items":[{"items":[{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"},{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"}],"name":"name"},{"items":[{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"},{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"}],"name":"name"}]}"#;
+
+        impl ShoppingListExample {
+            pub fn default() -> Option<ShoppingList> {
+                Some(serde_json::from_str(SHOPPING_LIST).unwrap())
+            }
+        }
+
+        pub struct ShoppingListCategoryExample;
+
+        const SHOPPING_LIST_CATEGORY: &str = r#"{"items":[{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"},{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"}],"name":"name"}"#;
+
+        impl ShoppingListCategoryExample {
+            pub fn default() -> Option<ShoppingListCategory> {
+                Some(serde_json::from_str(SHOPPING_LIST_CATEGORY).unwrap())
+            }
+        }
+
+        pub struct ShoppingListItemExample;
+
+        const SHOPPING_LIST_ITEM: &str =
+            r#"{"amount":"amount","icon":"icon","ingredient":"ingredient","unit":"unit"}"#;
+
+        impl ShoppingListItemExample {
+            pub fn default() -> Option<ShoppingListItem> {
+                Some(serde_json::from_str(SHOPPING_LIST_ITEM).unwrap())
+            }
+        }
 
         pub struct TempUnitExample;
         impl TempUnitExample {

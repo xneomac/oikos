@@ -25,5 +25,7 @@ pub static SECURITY_MATRIX: Lazy<HashMap<(&str, Method), HashSet<&str>>> = Lazy:
         ],
         ("/recipes/{recipe_id}", Method::DELETE) => hashset![
         ],
+        ("/shopping_list", Method::GET) => hashset![
+        ],
     }
 });

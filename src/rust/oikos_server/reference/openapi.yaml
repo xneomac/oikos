@@ -248,5 +248,24 @@ paths:
           in: header
           name: Authorization
           required: true
+  /shopping_list:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/shopping_list.v1.yaml
+      operationId: get_shopping_list
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
 components:
   securitySchemes: {}

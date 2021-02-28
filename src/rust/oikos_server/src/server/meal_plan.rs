@@ -18,13 +18,6 @@ pub enum MealPlanError {
     GithubDbError(#[from] GithubDbError),
 }
 
-#[derive(Serialize)]
-pub struct AccessTokenRequest {
-    client_id: String,
-    client_secret: String,
-    code: String,
-}
-
 impl crate::server::Server {
     pub async fn get_meal_plans(&self, authorization: &str) -> Result<MealPlans, MealPlanError> {
         let db = GithubDb::new(authorization, "xneomac")?;
