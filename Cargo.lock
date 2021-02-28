@@ -2025,6 +2025,7 @@ dependencies = [
  "geo-geojson 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "geo-rand 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "github-rs 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "log4rs 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "oikos_api 0.1.0",

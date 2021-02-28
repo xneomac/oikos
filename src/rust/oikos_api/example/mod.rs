@@ -66,7 +66,7 @@ pub mod components {
 
         pub struct RecipeIngredientModelExample;
 
-        const RECIPE_INGREDIENT_MODEL: &str = r#"{"amount":0.8008281904610115,"name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"}"#;
+        const RECIPE_INGREDIENT_MODEL: &str = r#"{"amount":0.8008281904610115,"category":"category","icon":"icon","name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"}"#;
 
         impl RecipeIngredientModelExample {
             pub fn default() -> Option<RecipeIngredientModel> {
@@ -83,7 +83,7 @@ pub mod components {
 
         pub struct RecipeModelExample;
 
-        const RECIPE_MODEL: &str = r#"{"id":"id","ingredients":[{"amount":0.8008281904610115,"name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"},{"amount":0.8008281904610115,"name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"}],"name":"name","notes":["notes","notes"],"oven_fan":"Off","oven_temp":{"amount":1},"quantity":{"amount":6.027456183070403,"unit":"unit"},"source_authors":["source_authors","source_authors"],"source_book":{"authors":["authors","authors"],"isbn":"isbn","notes":["notes","notes"],"title":"title"},"source_url":"source_url","steps":[{"haccp":{"control_point":"control_point","critical_control_point":"critical_control_point"},"notes":["notes","notes"],"step":"step"},{"haccp":{"control_point":"control_point","critical_control_point":"critical_control_point"},"notes":["notes","notes"],"step":"step"}]}"#;
+        const RECIPE_MODEL: &str = r#"{"id":"id","ingredients":[{"amount":0.8008281904610115,"category":"category","icon":"icon","name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"},{"amount":0.8008281904610115,"category":"category","icon":"icon","name":"name","notes":["notes","notes"],"processing":["processing","processing"],"substitutions":[null,null],"unit":"unit","usda_num":"usda_num"}],"name":"name","notes":["notes","notes"],"oven_fan":"Off","oven_temp":{"amount":1},"quantity":{"amount":6.027456183070403,"unit":"unit"},"source_authors":["source_authors","source_authors"],"source_book":{"authors":["authors","authors"],"isbn":"isbn","notes":["notes","notes"],"title":"title"},"source_url":"source_url","steps":[{"haccp":{"control_point":"control_point","critical_control_point":"critical_control_point"},"notes":["notes","notes"],"step":"step"},{"haccp":{"control_point":"control_point","critical_control_point":"critical_control_point"},"notes":["notes","notes"],"step":"step"}]}"#;
 
         impl RecipeModelExample {
             pub fn default() -> Option<RecipeModel> {

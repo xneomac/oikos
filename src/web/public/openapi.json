@@ -486,16 +486,20 @@
             "notes" : [ "notes", "notes" ],
             "substitutions" : [ null, null ],
             "name" : "name",
+            "icon" : "icon",
             "processing" : [ "processing", "processing" ],
-            "usda_num" : "usda_num"
+            "usda_num" : "usda_num",
+            "category" : "category"
           }, {
             "amount" : 0.8008281904610115,
             "unit" : "unit",
             "notes" : [ "notes", "notes" ],
             "substitutions" : [ null, null ],
             "name" : "name",
+            "icon" : "icon",
             "processing" : [ "processing", "processing" ],
-            "usda_num" : "usda_num"
+            "usda_num" : "usda_num",
+            "category" : "category"
           } ],
           "id" : "id",
           "steps" : [ {
@@ -642,8 +646,10 @@
           "notes" : [ "notes", "notes" ],
           "substitutions" : [ null, null ],
           "name" : "name",
+          "icon" : "icon",
           "processing" : [ "processing", "processing" ],
-          "usda_num" : "usda_num"
+          "usda_num" : "usda_num",
+          "category" : "category"
         },
         "properties" : {
           "name" : {
@@ -674,6 +680,12 @@
             "type" : "number"
           },
           "unit" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "category" : {
             "type" : "string"
           }
         },

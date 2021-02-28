@@ -1,6 +1,7 @@
 #![allow(clippy::let_unit_value)]
 
 mod auth;
+mod database;
 mod meal_plan;
 mod recipe;
 

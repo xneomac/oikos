@@ -28,6 +28,7 @@ dotenv = "0.15.0"
 base64 = "0.13.0"
 open_recipe_format = "0.1.0"
 uniqdb = "0.1.0"
+lazy_static = "1.4.0"
 
 [dependencies.ordered-float]
 features = ["std"]

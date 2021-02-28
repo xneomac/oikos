@@ -61,6 +61,12 @@ pub mod components {
             #[serde(rename = "amount")]
             #[serde(skip_serializing_if = "Option::is_none")]
             pub amount: Option<f64>,
+            #[serde(rename = "category")]
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub category: Option<String>,
+            #[serde(rename = "icon")]
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub icon: Option<String>,
             #[serde(rename = "name")]
             pub name: String,
             #[serde(rename = "notes")]
