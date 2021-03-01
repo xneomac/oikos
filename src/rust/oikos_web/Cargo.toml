@@ -25,6 +25,7 @@ lazy_static = "1.4.0"
 parking_lot = "0.10.0"
 uuid = { version = "0.8", features = ["v4", "wasm-bindgen"] }
 wasm-logger = "0.2.0"
+voca_rs = "0.3.0"
 
 [dependencies.chrono]
 version = "0.4"

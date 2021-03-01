@@ -47,7 +47,7 @@ impl<STATE: RouterState> ShoppingListPageComponent<STATE> {
                                     <div class="ingredient-item z-depth-1 vegetable">
                                         <img class="fit-picture"
                                             src={shopping_item.icon.clone()}/>
-                                        <p>{shopping_item.ingredient.clone()}</p>
+                                        <p>{ voca_rs::case::capitalize(&shopping_item.ingredient, &true) }</p>
                                     </div>
                                 </div>
                             }

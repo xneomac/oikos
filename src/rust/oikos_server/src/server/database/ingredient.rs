@@ -198,7 +198,7 @@ lazy_static! {
         ),
         (
             "miel",
-            IngredientInfo::new("/icons/icons8-miel-96.png", FruitEtLegumes)
+            IngredientInfo::new("/icons/icons8-miel-96.png", Epicerie)
         ),
         (
             "moutarde",

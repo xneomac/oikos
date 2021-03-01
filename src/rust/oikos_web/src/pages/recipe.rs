@@ -97,7 +97,7 @@ impl RecipePageComponent {
                         <div class="ingredient-item z-depth-1 vegetable">
                             <img class="fit-picture"
                                 src={icon}/>
-                            <p>{value}</p>
+                            <p>{voca_rs::case::capitalize(&value, &true)}</p>
                         </div>
                     </div>
                 }
@@ -325,7 +325,7 @@ impl RecipePageComponent {
         };
         html! {
             <div>
-                <h4>{recipe.name.clone()}</h4>
+                <h4>{voca_rs::case::capitalize(&recipe.name, &true)}</h4>
                 {quantity}
             </div>
         }
