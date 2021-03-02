@@ -2,6 +2,7 @@
 
 ## Todo
 
+- [ ] separate models database & api
 - [ ] filter search by country / ingredients / easy / hard
 - [ ] add country to recipe
 - [ ] show recipe planned in planning modal

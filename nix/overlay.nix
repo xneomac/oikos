@@ -37,7 +37,7 @@ self: super: rec {
         cp -r $srcFile/* .
       done
     '';
-    sha256 = "sha256:0a3mw4ch4rqa02fc7j7m4bf7daq3cwqcprfwxj6ccr5h85nxj280";
+    sha256 = "sha256:0fw622imwgqi15sfxkmr99jqmccrnc1d1pxjgqcc8byf9fwgbx5h";
   });
 
   # tools
