@@ -69,11 +69,19 @@ lazy_static! {
             IngredientInfo::new("/icons/icons8-ananas-96.png", FruitEtLegumes)
         ),
         (
+            "patate douce",
+            IngredientInfo::new("/icons/icons8-patate-douce-96.png", FruitEtLegumes)
+        ),
+        (
             "asperges",
             IngredientInfo::new("/icons/icons8-asperges-96.png", FruitEtLegumes)
         ),
         (
             "avocat",
+            IngredientInfo::new("/icons/icons8-avocat-96.png", FruitEtLegumes)
+        ),
+        (
+            "avocats",
             IngredientInfo::new("/icons/icons8-avocat-96.png", FruitEtLegumes)
         ),
         (
@@ -99,6 +107,18 @@ lazy_static! {
         (
             "carotte",
             IngredientInfo::new("/icons/icons8-carotte-96.png", FruitEtLegumes)
+        ),
+        (
+            "carottes",
+            IngredientInfo::new("/icons/icons8-carotte-96.png", FruitEtLegumes)
+        ),
+        (
+            "courgette",
+            IngredientInfo::new("/icons/icons8-zucchini-96.png", FruitEtLegumes)
+        ),
+        (
+            "courgettes",
+            IngredientInfo::new("/icons/icons8-zucchini-96.png", FruitEtLegumes)
         ),
         (
             "cerise",
@@ -222,6 +242,10 @@ lazy_static! {
         ),
         (
             "oignon",
+            IngredientInfo::new("/icons/icons8-oignon-96.png", FruitEtLegumes)
+        ),
+        (
+            "oignon nouveau",
             IngredientInfo::new("/icons/icons8-oignon-96.png", FruitEtLegumes)
         ),
         (
@@ -357,6 +381,10 @@ lazy_static! {
             IngredientInfo::new("/icons/icons8-agrumes-96.png", FruitEtLegumes)
         ),
         (
+            "citron vert",
+            IngredientInfo::new("/icons/icons8-agrumes-96.png", FruitEtLegumes)
+        ),
+        (
             "yaourt",
             IngredientInfo::new("/icons/icons8-yaourt-96.png", Cremerie)
         ),
@@ -365,10 +393,17 @@ lazy_static! {
             IngredientInfo::new("/icons/icons8-yaourt-96.png", Cremerie)
         ),
         ("spaghetti", IngredientInfo::category(Epicerie)),
+        ("tagliatelle", IngredientInfo::category(Epicerie)),
+        ("linguine", IngredientInfo::category(Epicerie)),
         ("pâte brisée", IngredientInfo::category(Epicerie)),
-        ("creme fraiche liquide", IngredientInfo::category(Cremerie)),
+        ("crème fraîche liquide", IngredientInfo::category(Cremerie)),
+        ("crème fraîche", IngredientInfo::category(Cremerie)),
         ("persil plat", IngredientInfo::category(FruitEtLegumes)),
         ("menthe", IngredientInfo::category(FruitEtLegumes)),
+        ("herbe de provence", IngredientInfo::category(Epicerie)),
+        ("tortilla", IngredientInfo::category(Epicerie)),
+        ("eau", IngredientInfo::category(Epicerie)),
+        ("sauce barbecue", IngredientInfo::category(Epicerie)),
     ]
     .iter()
     .copied()
