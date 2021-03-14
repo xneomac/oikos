@@ -417,6 +417,35 @@
         },
         "summary" : "Update meal plans"
       }
+    },
+    "/shopping_list" : {
+      "get" : {
+        "operationId" : "get_shopping_list",
+        "parameters" : [ {
+          "explode" : false,
+          "in" : "header",
+          "name" : "Authorization",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "style" : "simple"
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/shopping_list"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "summary" : "Your GET endpoint",
+        "tags" : [ ]
+      }
     }
   },
   "components" : {
@@ -486,16 +515,20 @@
             "notes" : [ "notes", "notes" ],
             "substitutions" : [ null, null ],
             "name" : "name",
+            "icon" : "icon",
             "processing" : [ "processing", "processing" ],
-            "usda_num" : "usda_num"
+            "usda_num" : "usda_num",
+            "category" : "category"
           }, {
             "amount" : 0.8008281904610115,
             "unit" : "unit",
             "notes" : [ "notes", "notes" ],
             "substitutions" : [ null, null ],
             "name" : "name",
+            "icon" : "icon",
             "processing" : [ "processing", "processing" ],
-            "usda_num" : "usda_num"
+            "usda_num" : "usda_num",
+            "category" : "category"
           } ],
           "id" : "id",
           "steps" : [ {
@@ -635,6 +668,48 @@
         "title" : "meal_plans",
         "type" : "array"
       },
+      "shopping_list" : {
+        "example" : {
+          "items" : [ {
+            "name" : "name",
+            "items" : [ {
+              "amount" : "amount",
+              "unit" : "unit",
+              "ingredient" : "ingredient",
+              "icon" : "icon"
+            }, {
+              "amount" : "amount",
+              "unit" : "unit",
+              "ingredient" : "ingredient",
+              "icon" : "icon"
+            } ]
+          }, {
+            "name" : "name",
+            "items" : [ {
+              "amount" : "amount",
+              "unit" : "unit",
+              "ingredient" : "ingredient",
+              "icon" : "icon"
+            }, {
+              "amount" : "amount",
+              "unit" : "unit",
+              "ingredient" : "ingredient",
+              "icon" : "icon"
+            } ]
+          } ]
+        },
+        "properties" : {
+          "items" : {
+            "items" : {
+              "$ref" : "#/components/schemas/shopping_list_category"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "items" ],
+        "title" : "shopping_list",
+        "type" : "object"
+      },
       "recipe_ingredient_model" : {
         "example" : {
           "amount" : 0.8008281904610115,
@@ -642,8 +717,10 @@
           "notes" : [ "notes", "notes" ],
           "substitutions" : [ null, null ],
           "name" : "name",
+          "icon" : "icon",
           "processing" : [ "processing", "processing" ],
-          "usda_num" : "usda_num"
+          "usda_num" : "usda_num",
+          "category" : "category"
         },
         "properties" : {
           "name" : {
@@ -675,6 +752,12 @@
           },
           "unit" : {
             "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          },
+          "category" : {
+            "type" : "string"
           }
         },
         "required" : [ "name" ],
@@ -685,6 +768,61 @@
         "enum" : [ "C", "F" ],
         "title" : "temp_unit",
         "type" : "string"
+      },
+      "shopping_list_category" : {
+        "example" : {
+          "name" : "name",
+          "items" : [ {
+            "amount" : "amount",
+            "unit" : "unit",
+            "ingredient" : "ingredient",
+            "icon" : "icon"
+          }, {
+            "amount" : "amount",
+            "unit" : "unit",
+            "ingredient" : "ingredient",
+            "icon" : "icon"
+          } ]
+        },
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "items" : {
+            "items" : {
+              "$ref" : "#/components/schemas/shopping_list_item"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "items", "name" ],
+        "title" : "shopping_list_category",
+        "type" : "object"
+      },
+      "shopping_list_item" : {
+        "example" : {
+          "amount" : "amount",
+          "unit" : "unit",
+          "ingredient" : "ingredient",
+          "icon" : "icon"
+        },
+        "properties" : {
+          "ingredient" : {
+            "type" : "string"
+          },
+          "amount" : {
+            "type" : "string"
+          },
+          "unit" : {
+            "type" : "string"
+          },
+          "icon" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "amount", "icon", "ingredient", "unit" ],
+        "title" : "shopping_list_item",
+        "type" : "object"
       },
       "recipe_model_haccp" : {
         "example" : {

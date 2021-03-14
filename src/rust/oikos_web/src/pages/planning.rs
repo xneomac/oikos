@@ -201,7 +201,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                                     <div class="valign-wrapper">
                                         <div class="list-elem" onclick=on_read_callback>
                                             <div class="title" >
-                                                { recipe.name.clone() }
+                                                { voca_rs::case::capitalize(&recipe.name, &true) }
                                             </div>
                                         </div>
                                         <div onclick=on_delete_callback class="action clear">
@@ -220,7 +220,7 @@ impl<STATE: RouterState> Component for PlanningPageComponent<STATE> {
                                     <div class="valign-wrapper">
                                         <div class="list-elem" onclick=on_read_callback>
                                             <div class="title" >
-                                                { recipe.name.clone() }
+                                                { voca_rs::case::capitalize(&recipe.name, &true) }
                                             </div>
                                         </div>
                                         <div class="action check selected">

@@ -83,6 +83,13 @@ pub trait OikosApi {
     ) -> Result<delete_recipe_by_id::Success, delete_recipe_by_id::Error<Self::Error>> {
         unimplemented!()
     }
+
+    async fn get_shopping_list(
+        &self,
+        _parameters: get_shopping_list::Parameters,
+    ) -> Result<get_shopping_list::Success, get_shopping_list::Error<Self::Error>> {
+        unimplemented!()
+    }
 }
 
 fn err_to_string(err: &dyn std::error::Error) -> String {
@@ -275,6 +282,21 @@ async fn delete_recipe_by_id<Server: OikosApi>(
         Err(Error::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
     }
 }
+/// Your GET endpoint
+async fn get_shopping_list<Server: OikosApi>(
+    server: Data<Server>,
+    header: get_shopping_list::Header,
+) -> impl Responder {
+    use get_shopping_list::*;
+    let parameters = Parameters::new(header);
+
+    match server.get_shopping_list(parameters).await {
+        Ok(Success::Status200(response)) => {
+            HttpResponseBuilder::new(StatusCode::from_u16(200).unwrap()).json(response)
+        }
+        Err(Error::Unknown(err)) => HttpResponse::InternalServerError().body(err_to_string(&err)),
+    }
+}
 
 pub fn config<Server: OikosApi + Send + Sync + Clone + 'static>(app: &mut ServiceConfig) {
     app.service(resource("/access_token").route(post().to(get_oauth_access_token::<Server>)))
@@ -294,5 +316,6 @@ pub fn config<Server: OikosApi + Send + Sync + Clone + 'static>(app: &mut Servic
                 .route(get().to(get_recipe_by_id::<Server>))
                 .route(put().to(update_recipe_by_id::<Server>))
                 .route(delete().to(delete_recipe_by_id::<Server>)),
-        );
+        )
+        .service(resource("/shopping_list").route(get().to(get_shopping_list::<Server>)));
 }

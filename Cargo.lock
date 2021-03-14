@@ -2025,6 +2025,7 @@ dependencies = [
  "geo-geojson 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "geo-rand 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "github-rs 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "log4rs 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "oikos_api 0.1.0",
@@ -2056,6 +2057,7 @@ dependencies = [
  "serde_json 1.0.60 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror 1.0.22 (registry+https://github.com/rust-lang/crates.io-index)",
  "uuid 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "voca_rs 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasm-bindgen 0.2.69 (registry+https://github.com/rust-lang/crates.io-index)",
  "wasm-logger 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "yew 0.17.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3486,6 +3488,14 @@ version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "voca_rs"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "unicode-segmentation 1.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "waker-fn"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4153,6 +4163,7 @@ dependencies = [
 "checksum vec_map 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)" = "f1bddf1187be692e79c5ffeab891132dfb0f236ed36a43c7ed39f1165ee20191"
 "checksum version_check 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "914b1a6776c4c929a602fafd8bc742e06365d4bcbe48c30f9cca5824f70dc9dd"
 "checksum version_check 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)" = "b5a972e5669d67ba988ce3dc826706fb0a8b01471c088cb0b6110b805cc36aed"
+"checksum voca_rs 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3c0469a25b164815f722283fee2c6d0fce15b8c89b0be53e325193520ff5ee51"
 "checksum waker-fn 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9d5b2c62b4012a3e1eca5a7e077d13b3bf498c4073e33ccd58626607748ceeca"
 "checksum want 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b6395efa4784b027708f7451087e647ec73cc74f5d9bc2e418404248d679a230"
 "checksum want 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1ce8a968cb1cd110d136ff8b819a556d6fb6d919363c61534f6860c7eb172ba0"

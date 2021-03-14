@@ -1,4 +1,5 @@
 #![allow(clippy::let_unit_value)]
+use super::database::ingredient::ingredient_info;
 use oikos_api::models::components::schemas::*;
 use serde::{Deserialize, Serialize};
 use uniqdb::{
@@ -77,7 +78,17 @@ impl crate::server::Server {
         authorization: &str,
     ) -> Result<RecipeModel, RecipeError> {
         let db = GithubDb::new(authorization, "open-cooking")?;
-        let recipe = db.get(recipe_id)?;
+        let mut recipe: RecipeModel = db.get(recipe_id)?;
+
+        recipe.ingredients.iter_mut().for_each(|ingredient| {
+            if ingredient.icon.is_none() {
+                if let Some(info) = ingredient_info(&ingredient.name) {
+                    ingredient.icon = info.icon.map(|text| text.to_string());
+                    ingredient.category = Some(info.category.to_string());
+                }
+            }
+        });
+
         Ok(recipe)
     }
 

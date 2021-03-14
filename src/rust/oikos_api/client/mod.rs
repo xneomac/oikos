@@ -349,6 +349,31 @@ impl OikosApiClient {
             _ => Err(Error::unknown(response).await),
         }
     }
+
+    #[allow(clippy::unit_arg)]
+    pub async fn get_shopping_list(
+        &self,
+        parameters: &get_shopping_list::Parameters,
+    ) -> Result<get_shopping_list::Success, get_shopping_list::Error> {
+        use get_shopping_list::*;
+        let url = self
+            .url
+            .join("/shopping_list".trim_start_matches('/'))
+            .expect("url parse error");
+        let response = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .map_err(ReqwestError::new)?;
+        match response.status().as_str() {
+            "200" => {
+                let response_body = response.json().await.map_err(ReqwestError::new)?;
+                Ok(Success::Status200(response_body))
+            }
+            _ => Err(Error::unknown(response).await),
+        }
+    }
 }
 
 pub mod get_oauth_access_token {
@@ -671,6 +696,41 @@ pub mod delete_recipe_by_id {
         Status403(Status403),
         /// Status 404 error: {0:?}
         Status404(Status404),
+        /// Unknown: {headers:?} {text:?}
+        Unknown {
+            headers: reqwest::header::HeaderMap,
+            text: reqwest::Result<String>,
+        },
+    }
+
+    impl Error {
+        pub async fn unknown(response: reqwest::Response) -> Self {
+            Self::Unknown {
+                headers: response.headers().clone(),
+                text: response.text().await,
+            }
+        }
+    }
+}
+
+pub mod get_shopping_list {
+    pub use crate::models::get_shopping_list::*;
+
+    #[allow(clippy::large_enum_variant)]
+    #[derive(Debug, thiserror::Error, displaydoc::Display)]
+    pub enum Error {
+        /// Request failed
+        Client(#[from] super::ReqwestError),
+        /// IO error occured while retrieving response body
+        Io(#[from] std::io::Error),
+        /// Request body serialization to JSON failed
+        BodySerialization(#[from] serde_json::Error),
+        /// Request parameters serialization failed
+        ParametersSerialization(#[from] serde_urlencoded::ser::Error),
+        /// Timeout occured during request
+        Timeout(#[from] async_std::future::TimeoutError),
+        /// Status 200 error: {0:?}
+        Status200(Status200),
         /// Unknown: {headers:?} {text:?}
         Unknown {
             headers: reqwest::header::HeaderMap,

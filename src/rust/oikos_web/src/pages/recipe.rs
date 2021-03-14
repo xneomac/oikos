@@ -86,23 +86,28 @@ impl RecipePageComponent {
                 };
 
                 let value = format!(
-                    "• {}{}{}",
+                    "{}{}{}",
                     ingredient_amount,
                     ingredient_unit,
                     ingredient.name.clone()
                 );
+                let icon = ingredient.icon.clone().unwrap_or_else(|| "".to_string());
                 html! {
-                    <li>
-                        {value}
-                    </li>
+                    <div class="ingredient-cell">
+                        <div class="ingredient-item z-depth-1 vegetable">
+                            <img class="fit-picture"
+                                src={icon}/>
+                            <p>{voca_rs::case::capitalize(&value, &true)}</p>
+                        </div>
+                    </div>
                 }
             })
             .collect::<Html>();
 
         html! {
-            <ul>
+            <div class="ingredients">
                 {ingredients}
-            </ul>
+            </div>
         }
     }
 
@@ -160,19 +165,27 @@ impl RecipePageComponent {
         let on_ingredient_add_callback = self.link.callback(|_| Message::OnIngredientAdd);
 
         html! {
-            <>
-                <form class="col s12">
-                    {ingredients}
-                </form>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <button onclick={on_ingredient_add_callback} class="btn waves-effect waves-light" name="action">
-                            {"ingrédient"}
-                            <i class="material-icons left">{"add"}</i>
-                        </button>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card horizontal">
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <form class="col s12">
+                                    {ingredients}
+                                </form>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <button onclick={on_ingredient_add_callback} class="btn waves-effect waves-light" name="action">
+                                            {"ingrédient"}
+                                            <i class="material-icons left">{"add"}</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </>
+            </div>
         }
     }
 
@@ -312,7 +325,7 @@ impl RecipePageComponent {
         };
         html! {
             <div>
-                <h4>{recipe.name.clone()}</h4>
+                <h4>{voca_rs::case::capitalize(&recipe.name, &true)}</h4>
                 {quantity}
             </div>
         }
@@ -496,6 +509,8 @@ impl Component for RecipePageComponent {
                         processing: None,
                         substitutions: None,
                         usda_num: None,
+                        icon: None,
+                        category: None,
                     });
                 }
             }
@@ -708,27 +723,29 @@ impl Component for RecipePageComponent {
 
                         <div class="container planning">
                             <div class="row">
-                                <div class="col s12 m6">
+                                <div class="col s12">
                                     <div class="card horizontal">
                                         <div class="card-stacked">
                                             <div class="card-content">
                                                 {header}
-                                            </div>
-                                            <div class="divider"></div>
-                                            <div class="card-content">
-                                                <h5>{"Ingrédients"}</h5>
-                                                {ingredients}
-                                            </div>
-                                            <div class="divider"></div>
-                                            <div class="card-content">
-                                                <h5>{"Instructions"}</h5>
-                                                {instructions}
-                                            </div>
-                                            <div class="divider"></div>
-                                            <div class="card-content">
                                                 <form class="col s12">
                                                     {source_url}
                                                 </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {ingredients}
+
+                            <div class="row">
+                                <div class="col s12 m6">
+                                    <div class="card horizontal">
+                                        <div class="card-stacked">
+                                            <div class="card-content">
+                                                <h5>{"Instructions"}</h5>
+                                                {instructions}
                                             </div>
                                         </div>
                                     </div>

@@ -59,14 +59,17 @@ impl<STATE: RouterState> Component for Tabs<STATE> {
                         </ul>
                     </div>
                     <div class="nav-content">
-                    <ul class="tabs tabs-transparent">
-                        <li class="tab">
-                            <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::RecipeList))>{"Recettes"}</a>
-                        </li>
-                        <li class="tab">
-                            <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::Planning))>{"Planning"}</a>
-                        </li>
-                    </ul>
+                        <ul class="tabs tabs-transparent">
+                            <li class="tab">
+                                <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::RecipeList))>{"Recettes"}</a>
+                            </li>
+                            <li class="tab">
+                                <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::Planning))>{"Planning"}</a>
+                            </li>
+                            <li class="tab">
+                                <a onclick=self.link.callback(|_| Message::ChangeRoute(AppRoute::ShoppingList))>{"Liste"}</a>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </div>

@@ -153,7 +153,7 @@ impl<STATE: RouterState> Component for RecipeListPageComponent<STATE> {
                                             <div class="valign-wrapper">
                                                 <div class="list-elem" onclick=onclick>
                                                     <div class="title" >
-                                                        { recipe.name.clone() }
+                                                        { voca_rs::case::capitalize(&recipe.name, &true) }
                                                     </div>
                                                 </div>
                                                 <div onclick=on_planning_callback class="action event">
